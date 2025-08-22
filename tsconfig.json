@@ -5,7 +5,7 @@
     "target": "esnext",
     "moduleResolution": "nodenext",
     "lib": ["esnext", "dom", "dom.iterable"],
-    "types": ["node"],
+    "types": [],
 
     // Other Outputs
     "sourceMap": true,

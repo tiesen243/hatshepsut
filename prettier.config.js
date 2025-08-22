@@ -14,6 +14,7 @@ const config = {
   plugins: [
     '@ianvs/prettier-plugin-sort-imports',
     '@prettier/plugin-php',
+    'prettier-plugin-blade',
     'prettier-plugin-tailwindcss',
   ],
 
@@ -39,11 +40,7 @@ const config = {
   importOrderParserPlugins: ['typescript', 'jsx', 'decorators-legacy'],
   importOrderTypeScriptVersion: '4.4.0',
 
-  overrides: [
-    { files: '*.json.hbs', options: { parser: 'json' } },
-    { files: '*.js.hbs', options: { parser: 'babel' } },
-    { files: '*.ts.hbs', options: { parser: 'typescript' } },
-  ],
+  overrides: [{ files: '*.tpl.php', options: { parser: 'blade' } }],
 }
 
 export default config
