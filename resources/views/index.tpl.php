@@ -5,7 +5,21 @@
 @endsection
 
 @section('content')
-  <h1>Welcome to the Home Page</h1>
-  <p>This is the main content of the home page.</p>
-  <p>Feel free to explore our website!</p>
+  <main class="container">
+    @if ($isGay)
+      <p>
+        lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
+        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
+        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+        mollit anim id est laborum.
+      </p>
+    @else
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+      </p>
+    @endif
+  </main>
 @endsection

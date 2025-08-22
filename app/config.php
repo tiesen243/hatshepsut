@@ -3,6 +3,8 @@
 use Framework\Core\Env;
 
 return [
+  'vite_url' => Env::get('VITE_URL', 'http://[::0]:5173'),
+
   'connection' => [
     'enabled' => false,
     'host' => Env::get('DB_HOST', 'localhost'),

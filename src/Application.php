@@ -1,19 +1,28 @@
 <?php
 
+namespace Framework;
+
 use Framework\Core\Database;
 use Framework\Core\Router;
+use Framework\Core\Template;
 use Framework\Http\Request;
 use Framework\Http\Response;
 
 class Application
 {
-  public function __construct()
+  public function __construct(string $basePath)
   {
-    $config = require_once BASE_PATH . '/app/config.php';
+    $config = require_once $basePath . '/app/config.php';
 
     if ($config['connection']['enabled']) {
       Database::connect($config['connection']);
     }
+
+    Template::create(
+      $basePath . '/resources/views',
+      $basePath . '/.cache/views',
+      $config['vite_url'],
+    );
 
     $this->loadRoutes();
   }
@@ -70,5 +79,3 @@ class Application
     }
   }
 }
-
-return new Application();

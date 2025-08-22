@@ -3,7 +3,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "format": "prettier --write ."
+    "format": "prettier --check . --cache --cache-location .cache/prettier",
+    "format:fix": "prettier --check . --write --cache --cache-location .cache/prettier"
   },
   "dependencies": {},
   "devDependencies": {
