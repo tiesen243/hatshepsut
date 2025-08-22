@@ -42,19 +42,25 @@
    npm install
    ```
 
-4. **Run the application locally:**
+4. **Set up environment variables:**
+
+   Copy the `.env.example` file to `.env` and configure your environment settings, such as database connection details.
+
+   ```sh
+   cp .env.example .env
+   ```
+
+5. **Run the application locally:**
 
    ```sh
    composer dev
    ```
 
-5. **Access the application:**
-
    Open your browser and go to [http://localhost:8000](http://localhost:8000) to view the app.
 
 ### Production Build
 
-1. **Build assets and start the PHP server:**
+1. **Preview the production build locally:**
 
    ```sh
    bun build
@@ -64,7 +70,7 @@
    composer serve
    ```
 
-2. **Build and run with Docker:**
+2. **Build and run for deployment (Docker):**
 
    ```sh
    # Build the Docker image
