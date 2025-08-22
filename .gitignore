@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build output
+dist/
+
+# Cache and temp files
+.cache/
+.php-tmp/
+*.cache
+*.tmp
+
+# Environment files
+.env*
+!.env.example
+
+# IDE/project files
+.idea/
+.vscode/
+
+# Logs
+*.log
