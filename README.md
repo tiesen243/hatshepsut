@@ -28,21 +28,17 @@
    cd hatshepsut
    ```
 
-2. **Install PHP dependencies:**
+2. **Install dependencies:**
 
    ```sh
    composer install
-   ```
 
-3. **Install frontend dependencies:**
-
-   ```sh
    bun install
    # or if using npm
    npm install
    ```
 
-4. **Set up environment variables:**
+3. **Set up environment variables:**
 
    Copy the `.env.example` file to `.env` and configure your environment settings, such as database connection details.
 
@@ -50,7 +46,7 @@
    cp .env.example .env
    ```
 
-5. **Run the application locally:**
+4. **Run the application locally:**
 
    ```sh
    composer dev
