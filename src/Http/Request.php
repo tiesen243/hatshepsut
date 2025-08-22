@@ -34,4 +34,24 @@ class Request
   {
     return $_SERVER['REQUEST_METHOD'] ?? 'GET';
   }
+
+  public function getServer(): array
+  {
+    return $this->server;
+  }
+
+  public function getCookies(): array
+  {
+    return $this->cookies;
+  }
+
+  public function query(): array
+  {
+    return $this->get;
+  }
+
+  public function body(): array
+  {
+    return array_merge($this->post, $this->files);
+  }
 }

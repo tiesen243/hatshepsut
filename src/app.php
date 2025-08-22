@@ -37,6 +37,7 @@ class Application
       } elseif (is_array($handler) && count($handler) === 2) {
         [$controller, $method] = $handler;
         $controller = new $controller();
+        $controller->setRequest($request);
 
         if (method_exists($controller, $method)) {
           $response = call_user_func_array([$controller, $method], $vars);
