@@ -3,10 +3,37 @@
 use Framework\Core\Env;
 
 return [
-  'mode' => Env::get('MODE', 'production'),
+  /*
+   * ------------------------------------------------------------
+   * Application Mode
+   * ------------------------------------------------------------
+   *
+   * This setting determines the mode your application is currently
+   * running in. It can be set to 'development' or 'production'.
+   */
+  'mode' => Env::get('MODE', 'development'),
 
+  /*
+   * ------------------------------------------------------------
+   * Vite URL
+   * ------------------------------------------------------------
+   *
+   * This setting defines the URL for the Vite development server.
+   * It is used to serve assets during development. Make sure to
+   * set this to the correct URL where your Vite server is running.
+   */
   'vite_url' => Env::get('VITE_URL', 'http://[::0]:5173'),
 
+  /*
+   * ------------------------------------------------------------
+   * Database Connection
+   * ------------------------------------------------------------
+   *
+   * This section contains the configuration for the database
+   * connection. You can enable or disable the connection and
+   * set the necessary parameters such as host, port, database,
+   * username, and password.
+   */
   'connection' => [
     'enabled' => false,
     'host' => Env::get('DB_HOST', 'localhost'),

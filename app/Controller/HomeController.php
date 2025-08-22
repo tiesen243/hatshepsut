@@ -8,8 +8,6 @@ class HomeController extends Controller
 {
   public function index()
   {
-    return $this->view('index', [
-      'isGay' => false,
-    ]);
+    return $this->view('index');
   }
 }

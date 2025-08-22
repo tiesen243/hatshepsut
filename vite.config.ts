@@ -1,8 +1,12 @@
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
+import liveReload from 'vite-plugin-live-reload'
 
 export default defineConfig({
-  plugins: [tailwindcss()],
+  plugins: [
+    liveReload(['app/**/*.php', 'resources/views/**/*.tpl.php']),
+    tailwindcss(),
+  ],
 
   build: {
     outDir: 'public/dist',
@@ -11,7 +15,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         globals: 'resources/css/globals.css',
-        index: 'resources/js/index.js',
+        theme: 'resources/js/theme.js',
       },
       output: {
         assetFileNames(chunkInfo) {

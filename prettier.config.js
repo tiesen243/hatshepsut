@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+
 /** @typedef {import("prettier").Config} PrettierConfig */
 /** @typedef {import("prettier-plugin-tailwindcss").PluginOptions} TailwindConfig */
 /** @typedef {import("@ianvs/prettier-plugin-sort-imports").PluginConfig} SortImportsConfig */
@@ -12,7 +14,6 @@ const config = {
   trailingComma: 'all',
 
   plugins: [
-    '@ianvs/prettier-plugin-sort-imports',
     '@prettier/plugin-php',
     'prettier-plugin-blade',
     'prettier-plugin-tailwindcss',
@@ -20,25 +21,9 @@ const config = {
 
   tailwindFunctions: ['cn', 'cva'],
   tailwindAttributes: ['className', 'tw'],
-
-  importOrder: [
-    '<TYPES>',
-    '^(react/(.*)$)|^(react$)|^(react-native(.*)$)',
-    '^(next/(.*)$)|^(next$)',
-    '^(expo(.*)$)|^(expo$)',
-    '<THIRD_PARTY_MODULES>',
-    '',
-    '<TYPES>^@yuki',
-    '^@yuki/(.*)$',
-    '',
-    '<TYPES>^(@/(.*)$)',
-    '<TYPES>^[.|..]',
-    '^@/',
-    '^[../]',
-    '^[./]',
-  ],
-  importOrderParserPlugins: ['typescript', 'jsx', 'decorators-legacy'],
-  importOrderTypeScriptVersion: '4.4.0',
+  tailwindStylesheet: fileURLToPath(
+    new URL('./resources/css/globals.css', import.meta.url),
+  ),
 
   overrides: [{ files: '*.tpl.php', options: { parser: 'blade' } }],
 }
