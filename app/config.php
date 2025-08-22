@@ -3,6 +3,8 @@
 use Framework\Core\Env;
 
 return [
+  'mode' => Env::get('MODE', 'production'),
+
   'vite_url' => Env::get('VITE_URL', 'http://[::0]:5173'),
 
   'connection' => [

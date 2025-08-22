@@ -14,6 +14,7 @@ class Template
     private string $templateDir,
     private string $cacheDir,
     private string $viteUrl,
+    private string $mode,
   ) {
     if (!is_dir($this->cacheDir)) {
       if (!mkdir($this->cacheDir, 0775, true) && !is_dir($this->cacheDir)) {
@@ -28,9 +29,10 @@ class Template
     string $templateDir,
     string $cacheDir,
     string $viteUrl,
+    string $mode,
   ): static {
     if (self::$instance === null) {
-      self::$instance = new static($templateDir, $cacheDir, $viteUrl);
+      self::$instance = new static($templateDir, $cacheDir, $viteUrl, $mode);
     }
     return self::$instance;
   }
@@ -202,21 +204,74 @@ class Template
     /**
      * @vite directive for Vite asset management
      * Usage:
-     *  - @vite
-     *    -> <script type="module" src="http://localhost:5173/@vite/client"></script>
-     *  - @vite(['resources/js/app.js', 'resources/css/app.css'])
-     *    -> <script type="module" src="http://localhost:5173/resources/js/app.js"></script>
-     *    -> <link rel="stylesheet" href="http://localhost:5173/resources/css/app.css">
+     *  - development mode:
+     *    @vite
+     *      -> <script type="module" src="http://localhost:5173/@vite/client"></script>
+     *    @vite(['resources/js/app.js', 'resources/css/app.css'])
+     *      -> <script type="module" src="http://localhost:5173/resources/js/app.js"></script>
+     *      -> <link rel="stylesheet" href="http://localhost:5173/resources/css/app.css">
+     *
+     *  - production mode:
+     *    @vite
+     *      -> <!-- vite client disabled in production -->
+     *    @vite(['resources/js/app.js', 'resources/css/app.css'])
+     *      -> <script type="module" src="/dist/js/app.js"></script>
+     *      -> <link rel="stylesheet" href="/dist/css/app.css">
      */
+    /* $content = preg_replace_callback( */
+    /*   '/@vite(?:\(\s*\[([^]]*)\]\s*\))?/', // capture optional [ ... ] */
+    /*   function ($matches) { */
+    /*     // Case: plain @vite -> HMR client */
+    /*     if (empty($matches[1])) { */
+    /*       return "<?php echo '<script type=\"module\" src=\"' . \$this->viteUrl . '/@vite/client\"></script>'; ?>"; */
+    /*     } */
+    /**/
+    /*     // Case: @vite([...]) */
+    /*     $files = explode(',', $matches[1]); */
+    /*     $files = array_map('trim', $files); */
+    /*     $files = array_map( */
+    /*       fn($file) => trim($file, " \t\n\r\0\x0B\"'"), */
+    /*       $files, */
+    /*     ); */
+    /**/
+    /*     $tags = []; */
+    /*     foreach ($files as $file) { */
+    /*       $ext = pathinfo($file, PATHINFO_EXTENSION); */
+    /**/
+    /*       switch ($ext) { */
+    /*         case 'js': */
+    /*           $tags[] = "<?php echo '<script type=\"module\" src=\"' . \$this->viteUrl . '/' . '$file' . '\"></script>'; ?>"; */
+    /*           break; */
+    /*         case 'css': */
+    /*           $tags[] = "<?php echo '<link rel=\"stylesheet\" href=\"' . \$this->viteUrl . '/' . '$file' . '\">'; ?>"; */
+    /*           break; */
+    /*         default: */
+    /*           $tags[] = */
+    /*             "<?php echo '<!-- [vite] Unsupported file type: " . */
+    /*             htmlspecialchars($file, ENT_QUOTES) . */
+    /*             " -->'; ?>"; */
+    /*           break; */
+    /*       } */
+    /*     } */
+    /**/
+    /*     return implode("\n", $tags); */
+    /*   }, */
+    /*   $content, */
+    /* ); */
+
     $content = preg_replace_callback(
-      '/@vite(?:\(\s*\[([^]]*)\]\s*\))?/', // capture optional [ ... ]
+      '/@vite(?:\(\s*\[([^]]*)\]\s*\))?/',
       function ($matches) {
-        // Case: plain @vite -> HMR client
+        // plain @vite
         if (empty($matches[1])) {
-          return "<?php echo '<script type=\"module\" src=\"' . \$this->viteUrl . '/@vite/client\"></script>'; ?>";
+          if ($this->mode === 'development') {
+            return "<?php echo '<script type=\"module\" src=\"' . \$this->viteUrl . '/@vite/client\"></script>'; ?>";
+          } else {
+            return "<?php echo '<!-- [vite] client disabled in production -->'; ?>";
+          }
         }
 
-        // Case: @vite([...])
+        // with file list
         $files = explode(',', $matches[1]);
         $files = array_map('trim', $files);
         $files = array_map(
@@ -228,18 +283,27 @@ class Template
         foreach ($files as $file) {
           $ext = pathinfo($file, PATHINFO_EXTENSION);
 
+          if ($this->mode === 'development') {
+            $url = "<?php echo \$this->viteUrl . '/' . '$file'; ?>";
+          } else {
+            // production mode → rewrite path into /dist
+            // Example: resources/css/globals.css → dist/css/globals.css
+            $relPath = preg_replace('#^resources/#', '', $file);
+            $url = "'/dist/" . $relPath . "'";
+          }
+
           switch ($ext) {
             case 'js':
-              $tags[] = "<?php echo '<script type=\"module\" src=\"' . \$this->viteUrl . '/' . '$file' . '\"></script>'; ?>";
+              $tags[] = "<script type=\"module\" src={$url}></script>";
               break;
             case 'css':
-              $tags[] = "<?php echo '<link rel=\"stylesheet\" href=\"' . \$this->viteUrl . '/' . '$file' . '\">'; ?>";
+              $tags[] = "<link rel=\"stylesheet\" href={$url}>";
               break;
             default:
               $tags[] =
-                "<?php echo '<!-- [vite] Unsupported file type: " .
+                '<!-- [vite] Unsupported file type: ' .
                 htmlspecialchars($file, ENT_QUOTES) .
-                " -->'; ?>";
+                ' -->';
               break;
           }
         }

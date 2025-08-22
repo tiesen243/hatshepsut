@@ -22,6 +22,7 @@ class Application
       $basePath . '/resources/views',
       $basePath . '/.cache/views',
       $config['vite_url'],
+      $config['mode'],
     );
 
     $this->loadRoutes();
