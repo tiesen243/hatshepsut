@@ -43,49 +43,36 @@
    ```
 
 4. **Run the application locally:**
-   - **Development mode:**
-
-     ```sh
-     composer dev
-     ```
-
-   - **Production mode:**
-
-     ```sh
-     bun run build
-     # or if using npm
-     npm run build
-
-     composer serve
-     ```
-
-5. **Run with Docker:**
 
    ```sh
-   # Build the Docker image:
-   docker build -t hatshepsut .
-
-   # Run the Docker container:
-   docker run -p 8000:8000 hatshepsut
+   composer dev
    ```
 
-6. **Access the application:**
+5. **Access the application:**
 
    Open your browser and go to [http://localhost:8000](http://localhost:8000) to view the app.
 
-### Project Structure
+### Production Build
 
-```
-.
-├── app/                # MVC application core (controllers, models) and configuration
-├── src/                # Core framework and application logic
-├── resources/          # Frontend assets (JS, CSS) and view templates
-├── public/             # Publicly-accessible web root
-├── Dockerfile
-├── composer.json
-├── package.json
-└── vite.config.ts
-```
+1. **Build assets and start the PHP server:**
+
+   ```sh
+   bun build
+   # or if using npm
+   npm run build
+
+   composer serve
+   ```
+
+2. **Build and run with Docker:**
+
+   ```sh
+   # Build the Docker image
+   docker build -t hatshepsut .
+
+   # Run the Docker container
+   docker run -d -p 8000:80 hatshepsut
+   ```
 
 ## License
 
