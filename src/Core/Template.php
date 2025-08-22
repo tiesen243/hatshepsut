@@ -215,8 +215,8 @@ class Template
      *    @vite
      *      -> <!-- vite client disabled in production -->
      *    @vite(['resources/js/app.js', 'resources/css/app.css'])
-     *      -> <script type="module" src="/dist/js/app.js"></script>
-     *      -> <link rel="stylesheet" href="/dist/css/app.css">
+     *      -> <script type="module" src="/assets/js/app.js"></script>
+     *      -> <link rel="stylesheet" href="/assets/css/app.css">
      */
     /* $content = preg_replace_callback( */
     /*   '/@vite(?:\(\s*\[([^]]*)\]\s*\))?/', // capture optional [ ... ] */
@@ -286,10 +286,10 @@ class Template
           if ($this->mode === 'development') {
             $url = "<?php echo \$this->viteUrl . '/' . '$file'; ?>";
           } else {
-            // production mode → rewrite path into /dist
-            // Example: resources/css/globals.css → dist/css/globals.css
+            // production mode → rewrite path into /assets
+            // Example: resources/css/globals.css → assets/css/globals.css
             $relPath = preg_replace('#^resources/#', '', $file);
-            $url = "'/dist/" . $relPath . "'";
+            $url = "'/assets/" . $relPath . "'";
           }
 
           switch ($ext) {

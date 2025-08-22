@@ -32,13 +32,15 @@ class Env
 
   public static function get(string $key, ?string $fallback = null): ?string
   {
-    $value = $fallback;
     if (array_key_exists($key, self::$variables)) {
-      $value = self::$variables[$key];
-    } elseif (getenv($key) !== false) {
-      $value = getenv($key);
+      return self::$variables[$key];
     }
 
-    return $value;
+    $envValue = getenv($key);
+    if ($envValue !== false && $envValue !== '') {
+      return $envValue;
+    }
+
+    return $fallback;
   }
 }

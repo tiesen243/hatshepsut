@@ -2,6 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "vite build",
     "dev": "vite",
     "format": "prettier --check . --cache --cache-location .cache/prettier",
     "format:fix": "prettier --check . --write --cache --cache-location .cache/prettier"
@@ -10,6 +11,7 @@
   "devDependencies": {
     "@prettier/plugin-php": "^0.24.0",
     "@tailwindcss/vite": "^4.1.12",
+    "@types/node": "^24.3.0",
     "prettier": "^3.6.2",
     "prettier-plugin-blade": "^2.1.21",
     "prettier-plugin-tailwindcss": "^0.6.14",

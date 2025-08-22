@@ -1,9 +1,5 @@
 @extends('_layout')
 
-@section('title')
-  Home
-@endsection
-
 @section('content')
   <main class="container">
     <p>
