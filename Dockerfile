@@ -39,4 +39,4 @@ COPY --from=builder /build/public/assets/js ./public/assets/js
 
 # Start the application
 EXPOSE 8000
-CMD ["composer", "start"]
+CMD ["composer", "serve"]

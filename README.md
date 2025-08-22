@@ -1,0 +1,92 @@
+# Hatshepsut
+
+**Hatshepsut** is a modern PHP web application framework that blends a robust backend with a streamlined frontend build process powered by Vite. The project is designed to help developers rapidly build scalable and maintainable web applications using contemporary PHP best practices and a component-driven frontend workflow.
+
+## Features
+
+- **Custom PHP Framework Core**: Includes core modules for HTTP request handling, routing, database connectivity (`PDO`), environment configuration, and templating.
+- **Blade-like Templating Engine**: Supports directives for layouts, sections, includes, asset loading (`@vite`), and conditionals, enabling a clean separation of logic and presentation.
+- **Frontend Asset Pipeline**: Uses [Vite](https://vitejs.dev/) for fast, modern asset bundling and Hot Module Replacement (HMR) in development. JS and CSS entrypoints are managed via `vite.config.ts` and built using Bun.
+- **Environment Management**: Loads configuration from environment files for seamless local development and production deployment.
+- **Dockerized Workflow**: Multi-stage `Dockerfile` for building frontend assets and running the PHP application, making local and cloud deployment easy.
+- **Extensible Structure**: Designed for expansion with custom controllers, middleware, and more.
+
+## Getting Started
+
+### Prerequisites
+
+- [Docker](https://www.docker.com/) (for building production)
+- [Bun](https://bun.sh/) or [npm](https://www.npmjs.com/) (for local asset builds)
+- [Composer](https://getcomposer.org/) (for PHP dependencies)
+
+### Development
+
+1. **Clone the repository:**
+
+   ```sh
+   git clone https://github.com/tiesen243/hatshepsut.git
+   cd hatshepsut
+   ```
+
+2. **Install PHP dependencies:**
+
+   ```sh
+   composer install
+   ```
+
+3. **Install frontend dependencies:**
+
+   ```sh
+   bun install
+   # or if using npm
+   npm install
+   ```
+
+4. **Run the application locally:**
+   - **Development mode:**
+
+     ```sh
+     composer dev
+     ```
+
+   - **Production mode:**
+
+     ```sh
+     bun run build
+     # or if using npm
+     npm run build
+
+     composer serve
+     ```
+
+5. **Run with Docker:**
+
+   ```sh
+   # Build the Docker image:
+   docker build -t hatshepsut .
+
+   # Run the Docker container:
+   docker run -p 8000:8000 hatshepsut
+   ```
+
+6. **Access the application:**
+
+   Open your browser and go to [http://localhost:8000](http://localhost:8000) to view the app.
+
+### Project Structure
+
+```
+.
+├── app/                # MVC application core (controllers, models) and configuration
+├── src/                # Core framework and application logic
+├── resources/          # Frontend assets (JS, CSS) and view templates
+├── public/             # Publicly-accessible web root
+├── Dockerfile
+├── composer.json
+├── package.json
+└── vite.config.ts
+```
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.

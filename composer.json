@@ -8,7 +8,7 @@
       "Composer\\Config::disableProcessTimeout",
       "MODE=development npx concurrently -c=\"#FF2D20,#646CFF\" \"php -S 0.0.0.0:8000 -t public\" \"npm run dev\" --names=server,vite --kill-others"
     ],
-    "start": [
+    "serve": [
       "Composer\\Config::disableProcessTimeout",
       "MODE=production php -S 0.0.0.0:8000 -t public"
     ]
