@@ -1,0 +1,25 @@
+# Ignore build and dependency directories
+node_modules
+vendor
+.cache
+dist/
+public/assets/css/
+public/assets/js/
+public/assets/.vite/
+
+# Ignore environment files except example
+.env*
+!.env.example
+
+# Ignore OS and editor files
+.DS_Store
+*.swp
+
+# Ignore VCS and test files
+.git
+.gitignore
+tests/
+*.log
+docker-compose.yml
+Dockerfile
+README.md

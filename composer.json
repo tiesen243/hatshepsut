@@ -6,11 +6,11 @@
   "scripts": {
     "dev": [
       "Composer\\Config::disableProcessTimeout",
-      "MODE=development npx concurrently -c=\"#FF2D20,#646CFF\" \"php -S localhost:8000 -t public\" \"npm run dev\" --names=server,vite --kill-others"
+      "MODE=development npx concurrently -c=\"#FF2D20,#646CFF\" \"php -S 0.0.0.0:8000 -t public\" \"npm run dev\" --names=server,vite --kill-others"
     ],
     "start": [
       "Composer\\Config::disableProcessTimeout",
-      "MODE=production php -S localhost:8000 -t public"
+      "MODE=production php -S 0.0.0.0:8000 -t public"
     ]
   },
   "autoload": {

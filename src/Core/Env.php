@@ -9,7 +9,7 @@ class Env
   public static function load(string $filePath): void
   {
     if (!file_exists($filePath)) {
-      throw new \Exception("Environment file not found: $filePath");
+      return;
     }
 
     $lines = file($filePath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
