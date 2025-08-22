@@ -1,25 +1,36 @@
 # Ignore build and dependency directories
-node_modules
-vendor
-.cache
+node_modules/
+vendor/
 dist/
 public/assets/css/
 public/assets/js/
 public/assets/.vite/
+tests/
 
-# Ignore environment files except example
-.env*
-!.env.example
+# Ignore cache and temporary files
+.cache/
+*.cache
+*.tmp
 
-# Ignore OS and editor files
-.DS_Store
-*.swp
 
 # Ignore VCS and test files
-.git
+.git/
 .gitignore
-tests/
 *.log
-docker-compose.yml
+
+# Ignore Docker and project config files
 Dockerfile
 README.md
+docker-compose.yml
+prettier.config.js
+
+# Ignore environment files
+.env*
+
+# Ignore OS, editor, and IDE files
+.DS_Store
+*.swo
+*.swp
+.idea/
+.vscode/
+*.code-workspace

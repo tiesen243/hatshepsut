@@ -20,6 +20,10 @@ public/assets/.vite/
 .env*
 !.env.example
 
-# Ignore IDE and project settings
+# Ignore OS, editor, and IDE files
+.DS_Store
+*.swo
+*.swp
 .idea/
 .vscode/
+*.code-workspace
