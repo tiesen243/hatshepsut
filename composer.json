@@ -1,5 +1,6 @@
 {
   "name": "tiesen/hatshepsut",
+  "version": "1.0.0",
   "license": "MIT",
   "type": "project",
   "scripts": {
@@ -10,8 +11,8 @@
   },
   "autoload": {
     "psr-4": {
-      "APP\\": "app/",
-      "CORE\\": "src/"
+      "App\\": "app/",
+      "Framework\\": "src/"
     }
   }
 }
