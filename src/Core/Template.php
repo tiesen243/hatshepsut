@@ -218,51 +218,9 @@ class Template
      *      -> <script type="module" src="/assets/js/app.js"></script>
      *      -> <link rel="stylesheet" href="/assets/css/app.css">
      */
-    /* $content = preg_replace_callback( */
-    /*   '/@vite(?:\(\s*\[([^]]*)\]\s*\))?/', // capture optional [ ... ] */
-    /*   function ($matches) { */
-    /*     // Case: plain @vite -> HMR client */
-    /*     if (empty($matches[1])) { */
-    /*       return "<?php echo '<script type=\"module\" src=\"' . \$this->viteUrl . '/@vite/client\"></script>'; ?>"; */
-    /*     } */
-    /**/
-    /*     // Case: @vite([...]) */
-    /*     $files = explode(',', $matches[1]); */
-    /*     $files = array_map('trim', $files); */
-    /*     $files = array_map( */
-    /*       fn($file) => trim($file, " \t\n\r\0\x0B\"'"), */
-    /*       $files, */
-    /*     ); */
-    /**/
-    /*     $tags = []; */
-    /*     foreach ($files as $file) { */
-    /*       $ext = pathinfo($file, PATHINFO_EXTENSION); */
-    /**/
-    /*       switch ($ext) { */
-    /*         case 'js': */
-    /*           $tags[] = "<?php echo '<script type=\"module\" src=\"' . \$this->viteUrl . '/' . '$file' . '\"></script>'; ?>"; */
-    /*           break; */
-    /*         case 'css': */
-    /*           $tags[] = "<?php echo '<link rel=\"stylesheet\" href=\"' . \$this->viteUrl . '/' . '$file' . '\">'; ?>"; */
-    /*           break; */
-    /*         default: */
-    /*           $tags[] = */
-    /*             "<?php echo '<!-- [vite] Unsupported file type: " . */
-    /*             htmlspecialchars($file, ENT_QUOTES) . */
-    /*             " -->'; ?>"; */
-    /*           break; */
-    /*       } */
-    /*     } */
-    /**/
-    /*     return implode("\n", $tags); */
-    /*   }, */
-    /*   $content, */
-    /* ); */
-
     $content = preg_replace_callback(
-      '/@vite(?:\(\s*\[([^]]*)\]\s*\))?/',
+      '/@vite(?!ReactRefresh)(?:\(\s*\[([^]]*)\]\s*\))?/',
       function ($matches) {
-        // plain @vite
         if (empty($matches[1])) {
           if ($this->mode === 'development') {
             return "<?php echo '<script type=\"module\" src=\"' . \$this->viteUrl . '/@vite/client\"></script>'; ?>";
@@ -271,7 +229,6 @@ class Template
           }
         }
 
-        // with file list
         $files = explode(',', $matches[1]);
         $files = array_map('trim', $files);
         $files = array_map(
@@ -286,14 +243,20 @@ class Template
           if ($this->mode === 'development') {
             $url = "<?php echo \$this->viteUrl . '/' . '$file'; ?>";
           } else {
-            // production mode → rewrite path into /assets
-            // Example: resources/css/globals.css → assets/css/globals.css
             $relPath = preg_replace('#^resources/#', '', $file);
             $url = "'/assets/" . $relPath . "'";
           }
 
           switch ($ext) {
             case 'js':
+            case 'jsx':
+            case 'ts':
+            case 'tsx':
+              if ($this->mode !== 'development') {
+                $relPath = preg_replace('#^resources/#', '', $file);
+                $relPath = preg_replace('/\.(jsx|ts|tsx)$/', '.js', $relPath);
+                $url = "'/assets/" . $relPath . "'";
+              }
               $tags[] = "<script type=\"module\" src={$url}></script>";
               break;
             case 'css':
@@ -309,6 +272,36 @@ class Template
         }
 
         return implode("\n", $tags);
+      },
+      $content,
+    );
+
+    /**
+     * @viteReactRefresh directive
+     *
+     * Usage:
+     *   - development:
+     *     @viteReactRefresh
+     *      -> react-refresh preamble
+     *   - production:
+     *     @viteReactRefresh
+     *      -> <!-- react refresh disabled in production -->/
+     */
+    $content = preg_replace_callback(
+      '/@viteReactRefresh/',
+      function () {
+        if ($this->mode === 'development') {
+          return <<<HTML
+          <script type="module">
+            import RefreshRuntime from "<?php echo \$this->viteUrl; ?>/@react-refresh"
+            RefreshRuntime.injectIntoGlobalHook(window)
+            window.\$RefreshReg$ = () => {}
+            window.\$RefreshSig$ = () => (type) => type
+            window.__vite_plugin_react_preamble_installed__ = true
+          </script>
+          HTML;
+        }
+        return '<!-- [vite] react refresh disabled in production -->';
       },
       $content,
     );

@@ -32,27 +32,21 @@ export default defineConfig({
 function getInputs() {
   const inputs: Record<string, string> = {}
 
-  // scan resources/css
-  const cssDir = path.resolve(__dirname, 'resources/css')
-  if (fs.existsSync(cssDir)) {
-    for (const file of fs.readdirSync(cssDir)) {
-      if (file.endsWith('.css')) {
-        const name = path.basename(file, '.css')
-        inputs[name] = path.join(cssDir, file)
+  const scan = (dir: string, exts: string[]) => {
+    const absDir = path.resolve(__dirname, dir)
+    if (!fs.existsSync(absDir)) return
+
+    for (const file of fs.readdirSync(absDir)) {
+      const ext = path.extname(file)
+      if (exts.includes(ext)) {
+        const name = path.basename(file, ext)
+        inputs[name] = path.join(absDir, file)
       }
     }
   }
 
-  // scan resources/js
-  const jsDir = path.resolve(__dirname, 'resources/js')
-  if (fs.existsSync(jsDir)) {
-    for (const file of fs.readdirSync(jsDir)) {
-      if (file.endsWith('.js')) {
-        const name = path.basename(file, '.js')
-        inputs[name] = path.join(jsDir, file)
-      }
-    }
-  }
+  scan('resources/css', ['.css'])
+  scan('resources/js', ['.js', '.jsx', '.ts', '.tsx'])
 
   return inputs
 }
