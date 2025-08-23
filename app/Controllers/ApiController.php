@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controllers;
 
 use Framework\Core\Controller;
 use Framework\Core\Database;
-use Framework\Http\HttpError;
 use Framework\Http\Response;
 
 class ApiController extends Controller

@@ -1,6 +1,6 @@
 <?php
 
-use App\Controller\ApiController;
+use App\Controllers\ApiController;
 use Framework\Core\Router;
 
 $router = Router::getInstance();
