@@ -5,7 +5,7 @@
 @endsection
 
 @section('head')
-  @vite(['resources/js/index.ts'])
+  @vite(['resources/js/index.tsx'])
 @endsection
 
 @section('content')

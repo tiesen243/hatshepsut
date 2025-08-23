@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 import liveReload from 'vite-plugin-live-reload'
@@ -8,6 +9,7 @@ import liveReload from 'vite-plugin-live-reload'
 export default defineConfig({
   plugins: [
     liveReload(['app/**/*.php', 'resources/views/**/*.tpl.php']),
+    react(),
     tailwindcss(),
   ],
 

@@ -26,6 +26,7 @@
 
     <!-- Vite Assets -->
     @vite
+    @viteReactRefresh
     @vite(['resources/css/globals.css', 'resources/js/theme.ts'])
 
     <!-- Additional head content from child views -->
