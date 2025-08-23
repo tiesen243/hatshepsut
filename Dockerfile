@@ -1,5 +1,5 @@
 # --- Stage 1: Build frontend assets with Bun ---
-FROM oven/bun:latest as builder
+FROM oven/bun:latest AS builder
 WORKDIR /build
 
 # Copy only files needed for dependency installation
@@ -14,7 +14,7 @@ COPY vite.config.ts vite.config.ts
 RUN bun run build
 
 # --- Stage 2: PHP application setup and runtime ---
-FROM php:8.4-cli as runner
+FROM php:8.4-cli AS runner
 WORKDIR /app
 
 # Install system dependencies and PHP extensions in a single layer
@@ -27,7 +27,7 @@ RUN apt-get update && \
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copy PHP dependency files and install dependencies (no dev)
-COPY composer.json composer.lock ./
+COPY composer.json ./
 RUN composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
 
 # Copy application source code
