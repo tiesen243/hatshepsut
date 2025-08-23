@@ -66,6 +66,16 @@ class Template
     return $content;
   }
 
+  public function renderPartial(string $template, array $data = []): string
+  {
+    extract($data, EXTR_SKIP);
+
+    $cachedFile = $this->compile($template);
+    ob_start();
+    include $cachedFile;
+    return ob_get_clean();
+  }
+
   private function compile(string $template): string
   {
     $templateFile =
@@ -142,10 +152,15 @@ class Template
      * @include directive
      * Usage:
      *  - @include('partial')
+     *  - @include('partial', ['var' => $value])
      */
-    $content = preg_replace(
-      "/@include\([\"'](.+?)[\"']\)/",
-      '<?php echo $this->render("$1"); ?>',
+    $content = preg_replace_callback(
+      "/@include\(\s*['\"]([^'\"\)]+)['\"]\s*(?:,\s*(\[.*?\]))?\s*\)/s",
+      function ($matches) {
+        $view = $matches[1];
+        $props = $matches[2] ?? '[]';
+        return "<?php echo \$this->renderPartial('{$view}', {$props}); ?>";
+      },
       $content,
     );
 

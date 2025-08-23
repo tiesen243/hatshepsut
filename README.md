@@ -59,7 +59,7 @@
 1. **Preview the production build locally:**
 
    ```sh
-   bun build
+   bun run build
    # or if using npm
    npm run build
 

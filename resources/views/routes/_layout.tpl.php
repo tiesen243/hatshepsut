@@ -11,7 +11,7 @@
     />
 
     <!-- Page Title -->
-    <title>@yield('title', 'Hatshepsut')</title>
+    <title>@yield('title') Hatshepsut</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
