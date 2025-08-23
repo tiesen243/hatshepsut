@@ -34,8 +34,7 @@ RUN composer install --no-interaction --no-dev --prefer-dist --optimize-autoload
 COPY . .
 
 # Copy built frontend assets from builder stage
-COPY --from=builder /build/public/assets/css ./public/assets/css
-COPY --from=builder /build/public/assets/js ./public/assets/js
+COPY --from=builder /build/public ./public
 
 # Start the application
 EXPOSE 8000
