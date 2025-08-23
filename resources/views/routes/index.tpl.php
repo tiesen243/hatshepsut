@@ -1,7 +1,7 @@
 @extends('routes._layout')
 
 @section('title')
-  Vite + PHP -
+  Vite + PHP + React -
 @endsection
 
 @section('head')

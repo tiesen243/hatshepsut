@@ -14,7 +14,7 @@ function App() {
         alt="Vite logo"
       />
       <h1 className="text-4xl font-bold text-[#646cff] drop-shadow">
-        Vite + PHP
+        Vite + PHP + React
       </h1>
       <button
         type="button"
