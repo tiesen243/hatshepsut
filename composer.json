@@ -18,5 +18,8 @@
       "App\\": "app/",
       "Framework\\": "src/"
     }
+  },
+  "require": {
+    "php": "*"
   }
 }

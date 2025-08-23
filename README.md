@@ -1,5 +1,11 @@
 # Hatshepsut
 
+<p align="center">
+  <a href="https://packagist.org/packages/tiesen243/hatshepsut"><img src="https://img.shields.io/packagist/dt/tiesen243/hatshepsut" alt="Total Downloads"></a>
+  <a href="https://packagist.org/packages/tiesen243/hatshepsut"><img src="https://img.shields.io/packagist/v/tiesen243/hatshepsut" alt="Latest Stable Version"></a>
+  <a href="https://packagist.org/packages/tiesen243/hatshepsut"><img src="https://img.shields.io/packagist/l/tiesen243/hatshepsut" alt="License"></a>
+</p>
+
 **Hatshepsut** is a modern PHP web application framework that blends a robust backend with a streamlined frontend build process powered by Vite. The project is designed to help developers rapidly build scalable and maintainable web applications using contemporary PHP best practices and a component-driven frontend workflow.
 
 ## Features
