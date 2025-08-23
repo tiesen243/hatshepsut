@@ -11,6 +11,16 @@ export default defineConfig({
     tailwindcss(),
   ],
 
+  server: {
+    proxy: {
+      '^/$': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
+
   build: {
     outDir: 'public/assets',
     manifest: true,

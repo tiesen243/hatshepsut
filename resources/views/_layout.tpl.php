@@ -26,7 +26,7 @@
 
     <!-- Vite Assets -->
     @vite
-    @vite(['resources/css/globals.css', 'resources/js/theme.js'])
+    @vite(['resources/css/globals.css', 'resources/js/theme.ts'])
 
     <!-- Additional head content from child views -->
     @yield('head')

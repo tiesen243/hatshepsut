@@ -21,7 +21,7 @@ const themeToggle = document.querySelector('.theme-toggle')
 if (themeToggle) {
   themeToggle.setAttribute('data-theme', resolvedTheme)
   themeToggle.addEventListener('click', () => {
-    const restoreAnimation = disableAnimation(themeToggle.nonce)
+    const restoreAnimation = disableAnimation(themeToggle.getAttribute('nonce'))
 
     document.documentElement.classList.toggle('dark')
     document.documentElement.classList.toggle('light')
@@ -36,7 +36,7 @@ if (themeToggle) {
   })
 }
 
-function disableAnimation(nonce) {
+function disableAnimation(nonce: string | null) {
   const css = document.createElement('style')
   if (nonce) css.setAttribute('nonce', nonce)
   css.appendChild(
