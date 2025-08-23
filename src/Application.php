@@ -61,7 +61,7 @@ class Application
       if (!$response instanceof Response) {
         $response = new Response($response);
       }
-    } catch (\Exception $e) {
+    } catch (\Throwable $e) {
       error_log('Error: ' . $e->getMessage());
       $response = new Response('Internal Server Error', 500);
     }
