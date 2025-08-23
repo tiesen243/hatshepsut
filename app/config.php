@@ -35,7 +35,7 @@ return [
    * username, and password.
    */
   'connection' => [
-    'enabled' => true,
+    'enabled' => false,
     'host' => Env::get('DB_HOST', 'localhost'),
     'port' => Env::get('DB_PORT', '3306'),
     'database' => Env::get('DB_NAME', 'test'),

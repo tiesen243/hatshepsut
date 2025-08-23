@@ -1,6 +1,6 @@
 {
   "name": "tiesen/hatshepsut",
-  "version": "1.0.0",
+  "description": "A modern PHP web application framework that blends a robust backend with a streamlined frontend build process powered by Vite",
   "license": "MIT",
   "type": "project",
   "scripts": {
