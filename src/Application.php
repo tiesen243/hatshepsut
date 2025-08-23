@@ -11,19 +11,21 @@ use Framework\Http\Response;
 
 class Application
 {
-  public function __construct(string $basePath)
-  {
-    $config = require_once $basePath . '/app/config.php';
+  private array $config;
 
-    if ($config['database']['enabled']) {
-      Database::connect($config['database']);
+  public function __construct(private string $basePath)
+  {
+    $this->config = require_once $basePath . '/app/config.php';
+
+    if ($this->config['database']['enabled']) {
+      Database::connect($this->config['database']);
     }
 
     Template::create(
       $basePath . '/resources/views',
       $basePath . '/.cache/views',
-      $config['vite_url'],
-      $config['mode'],
+      $this->config['vite_url'],
+      $this->config['mode'],
     );
 
     $this->loadRoutes();
@@ -78,7 +80,7 @@ class Application
 
   private function loadRoutes()
   {
-    $routesDir = BASE_PATH . '/routes';
+    $routesDir = $this->basePath . '/routes';
     $files = scandir($routesDir);
     foreach ($files as $file) {
       if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
