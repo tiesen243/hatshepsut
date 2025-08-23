@@ -2,16 +2,14 @@
 
 namespace Framework\Core;
 
-use PDO;
-
 class Database
 {
-  private PDO $pdo;
+  private \PDO $pdo;
   private static ?Database $instance = null;
 
   private function __construct(array $config)
   {
-    $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['database']}";
+    $dsn = "mysql:host={$config['host']};port={$config['port']};dbname={$config['name']}";
     $username = $config['username'] ?? '';
     $password = $config['password'] ?? '';
     $options = $config['options'] ?? [];
@@ -35,7 +33,7 @@ class Database
     return self::$instance;
   }
 
-  public static function getPdo(): ?PDO
+  public static function pdo(): ?\PDO
   {
     return self::$instance->pdo ?? null;
   }

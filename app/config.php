@@ -34,11 +34,11 @@ return [
    * set the necessary parameters such as host, port, database,
    * username, and password.
    */
-  'connection' => [
+  'database' => [
     'enabled' => false,
     'host' => Env::get('DB_HOST', 'localhost'),
     'port' => Env::get('DB_PORT', '3306'),
-    'database' => Env::get('DB_NAME', 'test'),
+    'name' => Env::get('DB_NAME', 'test'),
     'username' => Env::get('DB_USER', 'root'),
     'password' => Env::get('DB_PASSWORD', ''),
     'options' => [

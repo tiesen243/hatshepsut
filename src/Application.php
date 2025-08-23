@@ -5,6 +5,7 @@ namespace Framework;
 use Framework\Core\Database;
 use Framework\Core\Router;
 use Framework\Core\Template;
+use Framework\Http\HttpError;
 use Framework\Http\Request;
 use Framework\Http\Response;
 
@@ -14,8 +15,8 @@ class Application
   {
     $config = require_once $basePath . '/app/config.php';
 
-    if ($config['connection']['enabled']) {
-      Database::connect($config['connection']);
+    if ($config['database']['enabled']) {
+      Database::connect($config['database']);
     }
 
     Template::create(
@@ -36,9 +37,8 @@ class Application
       $request->getUri(),
     );
 
-    $response = new Response('Not Found', 404);
     if (!$found) {
-      return $response->send();
+      return HttpError::notFound()->send();
     }
 
     try {
@@ -52,18 +52,25 @@ class Application
         if (method_exists($controller, $method)) {
           $response = call_user_func_array([$controller, $method], $vars);
         } else {
-          $response = new Response('Method Not Found', 404);
+          $response = HttpError::notFound('Method Not Found');
         }
       } else {
-        $response = new Response('Invalid Route Handler', 500);
+        $response = HttpError::forbidden('Invalid Handler');
       }
 
-      if (!$response instanceof Response) {
+      if (!$response instanceof Response && !$response instanceof HttpError) {
         $response = new Response($response);
       }
     } catch (\Throwable $e) {
       error_log('Error: ' . $e->getMessage());
-      $response = new Response('Internal Server Error', 500);
+      if ($e instanceof HttpError) {
+        $response = $e;
+      } else {
+        $response = HttpError::serverError(
+          'Internal Server Error',
+          $e->getMessage(),
+        );
+      }
     }
 
     $response->send();
