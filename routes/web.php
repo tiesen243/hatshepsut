@@ -1,6 +1,6 @@
 <?php
 
-use App\Controller\HomeController;
+use App\Controllers\HomeController;
 use Framework\Core\Router;
 
 $router = Router::getInstance();
