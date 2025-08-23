@@ -9,9 +9,9 @@ rootElement.innerHTML = /* HTML */ `<div
   />
   <h1 class="text-4xl font-bold text-[#646cff] drop-shadow">Vite + PHP</h1>
   <button
+    type="button"
     id="counter"
     class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-    type="button"
   >
     count is 0
   </button>
