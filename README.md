@@ -30,8 +30,8 @@
 1. **Clone the repository:**
 
    ```sh
-   git clone https://github.com/tiesen243/hatshepsut.git
-   cd hatshepsut
+   composer create-project tiesen243/hatshepsut my-app
+   cd my-app
    ```
 
 2. **Install dependencies:**
@@ -39,9 +39,13 @@
    ```sh
    composer install
 
-   bun install
-   # or if using npm
    npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   # or
+   bun install
    ```
 
 3. **Set up environment variables:**
