@@ -7,7 +7,9 @@
     "format": "prettier --check . --cache --cache-location .cache/prettier",
     "format:fix": "prettier --check . --write --cache --cache-location .cache/prettier"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lucide": "^0.541.0"
+  },
   "devDependencies": {
     "@prettier/plugin-php": "^0.24.0",
     "@tailwindcss/vite": "^4.1.12",

@@ -1,3 +1,11 @@
+import { createIcons, Sun, Moon } from 'lucide'
+createIcons({
+  icons: {
+    Sun,
+    Moon,
+  },
+})
+
 let resolvedTheme
 ;(function () {
   const savedTheme = localStorage.getItem('theme')
@@ -16,7 +24,7 @@ let resolvedTheme
   )
 })()
 
-const themeToggle = document.querySelector('.theme-toggle')
+const themeToggle = document.getElementById('theme-toggle')
 
 if (themeToggle) {
   themeToggle.setAttribute('data-theme', resolvedTheme)
