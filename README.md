@@ -27,10 +27,16 @@
 
 ### Development
 
-1. **Clone the repository:**
+1. **Create a new project:**
 
    ```sh
+   # vanilla js
    composer create-project tiesen243/hatshepsut my-app
+   # react
+   composer create-project tiesen243/hatshepsut:dev-react my-app
+   # vue
+   composer create-project tiesen243/hatshepsut:dev-vue my-app
+
    cd my-app
    ```
 
