@@ -1,7 +1,7 @@
 @extends('routes._layout')
 
 @section('title')
-  Vanilla JS Example -
+  Vite + PHP -
 @endsection
 
 @section('head')
@@ -9,5 +9,5 @@
 @endsection
 
 @section('content')
-  <main class="container py-4" id="root"></main>
+  <main id="root" class="container"></main>
 @endsection

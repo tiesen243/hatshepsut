@@ -48,19 +48,9 @@ class Template
   public function render(string $template, array $data = []): string
   {
     $this->extends = '';
-
-    extract($data, EXTR_SKIP);
-
-    $cachedFile = $this->compile($template);
-    ob_start();
-    include $cachedFile;
-    $content = ob_get_clean();
-
+    $content = $this->renderPartial($template, $data);
     if (!empty($this->extends)) {
-      $cachedFile = $this->compile($this->extends);
-      ob_start();
-      include $cachedFile;
-      $content = ob_get_clean();
+      $content = $this->renderPartial($this->extends, $data);
     }
 
     return $content;
