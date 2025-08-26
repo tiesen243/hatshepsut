@@ -3,10 +3,7 @@ node_modules/
 vendor/
 
 # Ignore build output
-public/.vite/
-public/assets/css/
-public/assets/js/
-public/assets/*.js
+public/build/
 
 # Ignore cache and temporary files
 .cache/

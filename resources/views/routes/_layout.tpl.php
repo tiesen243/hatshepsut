@@ -5,13 +5,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>@yield('title') Hatshepsut</title>
     <meta
       name="description"
       content="@yield('description', 'Hatshepsut: Modern web application')"
     />
-
-    <!-- Page Title -->
-    <title>@yield('title') Hatshepsut</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -27,6 +25,14 @@
     <!-- Vite Assets -->
     @vite
     @vite(['resources/css/globals.css', 'resources/js/theme.ts'])
+
+    <!-- Fix Flash of Unstyled Content (FOUC) -->
+    <script>
+      ;(function () {
+        const theme = localStorage.getItem('theme') ?? 'light'
+        if (theme === 'dark') document.documentElement.classList.add('dark')
+      })()
+    </script>
 
     <!-- Additional head content from child views -->
     @yield('head')

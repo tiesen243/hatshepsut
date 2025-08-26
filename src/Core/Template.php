@@ -13,6 +13,7 @@ class Template
   public function __construct(
     private string $templateDir,
     private string $cacheDir,
+    private string $manifestPath,
     private string $viteUrl,
     private string $mode,
   ) {
@@ -26,13 +27,18 @@ class Template
   }
 
   public static function create(
-    string $templateDir,
-    string $cacheDir,
+    string $basePath,
     string $viteUrl,
     string $mode,
   ): static {
     if (self::$instance === null) {
-      self::$instance = new static($templateDir, $cacheDir, $viteUrl, $mode);
+      self::$instance = new static(
+        $basePath . '/resources/views',
+        $basePath . '/.cache/views',
+        $basePath . '/public/build/.vite/manifest.json',
+        $viteUrl,
+        $mode,
+      );
     }
     return self::$instance;
   }
@@ -92,6 +98,7 @@ class Template
   {
     /**
      * @extends directive
+     *
      * Usage:
      *  - @extends('layout')
      */
@@ -103,6 +110,7 @@ class Template
 
     /**
      * @yield with optional default value
+     *
      * Usage:
      *  - @yield('section_name')
      *  - @yield('section_name', 'default value')
@@ -123,6 +131,7 @@ class Template
 
     /**
      * @section directive
+     *
      * Usage:
      *  - @section('section_name')
      *  - @endsection
@@ -140,6 +149,7 @@ class Template
 
     /**
      * @include directive
+     *
      * Usage:
      *  - @include('partial')
      *  - @include('partial', ['var' => $value])
@@ -156,8 +166,6 @@ class Template
 
     /**
      * {{ $variable }} syntax for escaping variables
-     * Usage:
-     *  - {{ $variable }}
      */
     $content = preg_replace(
       '/\{\{\s*(.+?)\s*\}\}/',
@@ -167,8 +175,6 @@ class Template
 
     /**
      * {{!! $variable !!}} syntax for unescaped variables
-     * Usage:
-     *  - {{!! $variable !!}}
      */
     $content = preg_replace(
       '/\{\{\!\!\s*(.+?)\s*\!\!\}\}/',
@@ -178,6 +184,7 @@ class Template
 
     /**
      * @foreach directive
+     *
      * Usage:
      *  - @foreach($items as $item)
      *  - @endforeach
@@ -191,6 +198,7 @@ class Template
 
     /**
      * @if directive
+     *
      * Usage:
      *  - @if($condition)
      *  - @elseif($anotherCondition)
@@ -208,20 +216,23 @@ class Template
 
     /**
      * @vite directive for Vite asset management
-     * Usage:
-     *  - development mode:
-     *    @vite
-     *      -> <script type="module" src="http://localhost:5173/@vite/client"></script>
-     *    @vite(['resources/js/app.js', 'resources/css/app.css'])
-     *      -> <script type="module" src="http://localhost:5173/resources/js/app.js"></script>
-     *      -> <link rel="stylesheet" href="http://localhost:5173/resources/css/app.css">
      *
-     *  - production mode:
-     *    @vite
-     *      -> <!-- vite client disabled in production -->
-     *    @vite(['resources/js/app.js', 'resources/css/app.css'])
-     *      -> <script type="module" src="/assets/js/app.js"></script>
-     *      -> <link rel="stylesheet" href="/assets/css/app.css">
+     * Usage:
+     *  - Development mode:
+     *       @vite
+     *         -> <script type="module" src="http://[::0]:5173/@vite/client"></script>
+     *       @vite(['resources/js/app.js', 'resources/css/app.css'])
+     *         -> <script type="module" src="http://[::0]:5173/resources/js/app.js"></script>
+     *         -> <link rel="stylesheet" href="http://[::0]:5173/resources/css/app.css">
+     *
+     *   - Production mode:
+     *       @vite
+     *         -> (no output)
+     *       @vite(['resources/js/app.js', 'resources/css/app.css'])
+     *         -> <script type="module" src="/build/app-somehash.js"></script>
+     *         -> <link rel="stylesheet" href="/build/app-somehash.css">
+     *
+     * Supports .js, .ts, .jsx, .tsx for scripts and .css, .sass, .scss, .less, .styl for styles.
      */
     $content = preg_replace_callback(
       '/@vite(?!ReactRefresh)(?:\(\s*\[([^]]*)\]\s*\))?/',
@@ -230,52 +241,49 @@ class Template
           if ($this->mode === 'development') {
             return "<?php echo '<script type=\"module\" src=\"' . \$this->viteUrl . '/@vite/client\"></script>'; ?>";
           } else {
-            return "<?php echo '<!-- [vite] client disabled in production -->'; ?>";
+            return '';
           }
         }
 
-        $files = explode(',', $matches[1]);
-        $files = array_map('trim', $files);
-        $files = array_map(
-          fn($file) => trim($file, " \t\n\r\0\x0B\"'"),
-          $files,
+        $assets = array_map(
+          'trim',
+          explode(',', str_replace(['"', "'"], '', $matches[1])),
         );
 
-        $tags = [];
-        foreach ($files as $file) {
-          $ext = pathinfo($file, PATHINFO_EXTENSION);
-
-          if ($this->mode === 'development') {
-            $url = "<?php echo \$this->viteUrl . '/' . '$file'; ?>";
-          } else {
-            $relPath = preg_replace('#^resources/#', '', $file);
-            $url = "'/assets/" . $relPath . "'";
+        if ($this->mode === 'development') {
+          $tags = [];
+          foreach ($assets as $asset) {
+            if (preg_match('/\.(js|ts|jsx|tsx)$/i', $asset)) {
+              $tags[] = "<?php echo '<script type=\"module\" src=\"' . \$this->viteUrl . '/' . '$asset' . '\"></script>'; ?>";
+            } elseif (preg_match('/\.(css|sass|scss|less|styl)$/i', $asset)) {
+              $tags[] = "<?php echo '<link rel=\"stylesheet\" href=\"' . \$this->viteUrl . '/' . '$asset' . '\">'; ?>";
+            }
           }
-
-          switch ($ext) {
-            case 'js':
-            case 'jsx':
-            case 'ts':
-            case 'tsx':
-              if ($this->mode !== 'development') {
-                $relPath = preg_replace('#^resources/#', '', $file);
-                $relPath = preg_replace('/\.(jsx|ts|tsx)$/', '.js', $relPath);
-                $url = "'/assets/" . $relPath . "'";
-              }
-              $tags[] = "<script type=\"module\" src={$url}></script>";
-              break;
-            case 'css':
-              $tags[] = "<link rel=\"stylesheet\" href={$url}>";
-              break;
-            default:
-              $tags[] =
-                '<!-- [vite] Unsupported file type: ' .
-                htmlspecialchars($file, ENT_QUOTES) .
-                ' -->';
-              break;
-          }
+          return implode("\n", $tags);
         }
 
+        if (!file_exists($this->manifestPath)) {
+          throw new \RuntimeException(
+            "Vite manifest file not found: {$this->manifestPath}",
+          );
+        }
+
+        $manifest = json_decode(file_get_contents($this->manifestPath), true);
+        $tags = [];
+        foreach ($assets as $asset) {
+          if (!isset($manifest[$asset])) {
+            throw new \RuntimeException(
+              "Vite asset not found in manifest: $asset",
+            );
+          }
+          $entry = $manifest[$asset];
+          $file = $entry['file'];
+          if (preg_match('/\.(js|ts|jsx|tsx)$/i', $asset)) {
+            $tags[] = "<?php echo '<script type=\"module\" src=\"/build/$file\"></script>'; ?>";
+          } elseif (preg_match('/\.(css|sass|scss|less|styl)$/i', $asset)) {
+            $tags[] = "<?php echo '<link rel=\"stylesheet\" href=\"/build/$file\">'; ?>";
+          }
+        }
         return implode("\n", $tags);
       },
       $content,
@@ -285,12 +293,12 @@ class Template
      * @viteReactRefresh directive
      *
      * Usage:
-     *   - development:
-     *     @viteReactRefresh
-     *      -> react-refresh preamble
-     *   - production:
-     *     @viteReactRefresh
-     *      -> <!-- react refresh disabled in production -->/
+     *   - Development mode:
+     *       @viteReactRefresh
+     *         -> react-refresh preamble
+     *   - Production mode:
+     *       @viteReactRefresh
+     *         -> (no output)
      */
     $content = preg_replace_callback(
       '/@viteReactRefresh/',
@@ -306,7 +314,7 @@ class Template
           </script>
           HTML;
         }
-        return '<!-- [vite] react refresh disabled in production -->';
+        return '';
       },
       $content,
     );

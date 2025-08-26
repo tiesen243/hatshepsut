@@ -22,8 +22,7 @@ class Application
     }
 
     Template::create(
-      $basePath . '/resources/views',
-      $basePath . '/.cache/views',
+      $basePath,
       $this->config['vite_url'],
       $this->config['mode'],
     );
