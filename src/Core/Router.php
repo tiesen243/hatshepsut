@@ -34,7 +34,7 @@ class Router
     }
 
     foreach (self::$routes[$method] ?? [] as $route => $handler) {
-      if (strpos($route, ':') === false) {
+      if (strpos($route, '*') !== false || strpos($route, ':') === false) {
         continue;
       }
 
@@ -46,6 +46,15 @@ class Router
         $paramNames = $paramNames[1];
         $vars = array_combine($paramNames, $matches);
         return [1, $handler, $vars ?: []];
+      }
+    }
+
+    foreach (self::$routes[$method] ?? [] as $route => $handler) {
+      if (substr($route, -2) === '/*') {
+        $base = rtrim(substr($route, 0, -2), '/');
+        if ($base === '' || strpos($path, $base) === 0) {
+          return [1, $handler, []];
+        }
       }
     }
 
