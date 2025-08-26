@@ -5,13 +5,13 @@ use Framework\Core\Env;
 return [
   /*
    * ------------------------------------------------------------
-   * Application Mode
+   * Application Environment
    * ------------------------------------------------------------
    *
-   * This setting determines the mode your application is currently
+   * This setting determines the environment the application is
    * running in. It can be set to 'development' or 'production'.
    */
-  'mode' => Env::get('MODE', 'development'),
+  'env' => Env::get('ENV', 'development'),
 
   /*
    * ------------------------------------------------------------

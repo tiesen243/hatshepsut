@@ -8,6 +8,7 @@
     "format:fix": "prettier --check . --write --cache --cache-location .cache/prettier"
   },
   "dependencies": {
+    "cross-env": "^10.0.0",
     "lucide": "^0.542.0"
   },
   "devDependencies": {

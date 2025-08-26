@@ -9,5 +9,5 @@
 @endsection
 
 @section('content')
-  <main id="root" class="container"></main>
+  <main id="root" class="container py-4"></main>
 @endsection

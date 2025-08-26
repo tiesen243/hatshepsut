@@ -15,7 +15,7 @@ class Template
     private string $cacheDir,
     private string $manifestPath,
     private string $viteUrl,
-    private string $mode,
+    private bool $isDev = false,
   ) {
     if (!is_dir($this->cacheDir)) {
       if (!mkdir($this->cacheDir, 0775, true) && !is_dir($this->cacheDir)) {
@@ -29,7 +29,7 @@ class Template
   public static function create(
     string $basePath,
     string $viteUrl,
-    string $mode,
+    bool $isDev,
   ): static {
     if (self::$instance === null) {
       self::$instance = new static(
@@ -37,7 +37,7 @@ class Template
         $basePath . '/.cache/views',
         $basePath . '/public/build/.vite/manifest.json',
         $viteUrl,
-        $mode,
+        $isDev,
       );
     }
     return self::$instance;
@@ -238,7 +238,7 @@ class Template
       '/@vite(?!ReactRefresh)(?:\(\s*\[([^]]*)\]\s*\))?/',
       function ($matches) {
         if (empty($matches[1])) {
-          if ($this->mode === 'development') {
+          if ($this->isDev) {
             return "<?php echo '<script type=\"module\" src=\"' . \$this->viteUrl . '/@vite/client\"></script>'; ?>";
           } else {
             return '';
@@ -250,7 +250,7 @@ class Template
           explode(',', str_replace(['"', "'"], '', $matches[1])),
         );
 
-        if ($this->mode === 'development') {
+        if ($this->isDev) {
           $tags = [];
           foreach ($assets as $asset) {
             if (preg_match('/\.(js|ts|jsx|tsx)$/i', $asset)) {
@@ -303,7 +303,7 @@ class Template
     $content = preg_replace_callback(
       '/@viteReactRefresh/',
       function () {
-        if ($this->mode === 'development') {
+        if ($this->isDev) {
           return <<<HTML
           <script type="module">
             import RefreshRuntime from "<?php echo \$this->viteUrl; ?>/@react-refresh"

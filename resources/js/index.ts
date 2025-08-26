@@ -1,20 +1,11 @@
 const rootElement = document.getElementById('root') as HTMLElement
-rootElement.innerHTML = /* HTML */ `<div
-  class="flex min-h-[calc(100dvh-3.5rem)] flex-col items-center justify-center gap-6"
->
-  <img
-    src="https://vitejs.dev/logo.svg"
-    class="mb-2 h-20 animate-bounce"
-    alt="Vite logo"
-  />
-  <h1 class="text-4xl font-bold text-[#646cff] drop-shadow">Vite + PHP</h1>
-  <button
-    type="button"
-    id="counter"
-    class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+rootElement.innerHTML = /* HTML */ `<div>
+  <pre
+    id="status"
+    class="mb-8 overflow-x-auto rounded-md bg-secondary p-4 text-secondary-foreground shadow-md"
   >
-    count is 0
-  </button>
+    loading...
+  </pre>
 
   <p class="text-center text-lg text-muted-foreground">
     Edit
@@ -25,11 +16,11 @@ rootElement.innerHTML = /* HTML */ `<div
   </p>
 </div>`
 
-const counterButton = document.getElementById('counter') as HTMLButtonElement
-let counter = 0
-const setCounter = (count: number) => {
-  counter = count
-  counterButton.innerHTML = `count is ${counter}`
-}
-counterButton.addEventListener('click', () => setCounter(counter + 1))
-setCounter(0)
+window.addEventListener('DOMContentLoaded', () => {
+  const statusElement = document.getElementById('status') as HTMLElement
+
+  fetch('/api/health').then(async (response) => {
+    const data = await response.json()
+    statusElement.innerText = JSON.stringify(data, null, 2)
+  })
+})
