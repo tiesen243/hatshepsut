@@ -1,11 +1,19 @@
 const rootElement = document.getElementById('root') as HTMLElement
-rootElement.innerHTML = /* HTML */ `<div>
-  <pre
+rootElement.innerHTML = /* HTML */ `<pre
     id="status"
     class="mb-8 overflow-x-auto rounded-md bg-secondary p-4 text-secondary-foreground shadow-md"
   >
-    loading...
-  </pre>
+${JSON.stringify(
+      {
+        status: 'Loading...',
+        database: 'Loading...',
+        timestamp: new Date().toISOString(),
+        message: 'Loading...',
+      },
+      null,
+      2,
+    )}</pre
+  >
 
   <p class="text-center text-lg text-muted-foreground">
     Edit
@@ -13,8 +21,7 @@ rootElement.innerHTML = /* HTML */ `<div>
       >resources/js/index.ts</code
     >
     and save to test HMR
-  </p>
-</div>`
+  </p>`
 
 window.addEventListener('DOMContentLoaded', () => {
   const statusElement = document.getElementById('status') as HTMLElement
