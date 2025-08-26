@@ -3,12 +3,12 @@ import * as React from 'react'
 export default function Index() {
   const [status, setStatus] = React.useState<{
     status: string
-    datatabase: string
+    database: string
     timestamp: string
     message: string
   }>({
     status: 'Loading...',
-    datatabase: 'Loading...',
+    database: 'Loading...',
     timestamp: new Date().toISOString(),
     message: 'Loading...',
   })
