@@ -7,6 +7,12 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [tailwindcss()],
 
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'resources/js'),
+    },
+  },
+
   build: {
     outDir: 'public/build',
     assetsDir: '.',

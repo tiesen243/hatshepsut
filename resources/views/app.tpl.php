@@ -5,11 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>@yield('title') Hatshepsut</title>
-    <meta
-      name="description"
-      content="@yield('description', 'Hatshepsut: Modern web application')"
-    />
+    <title>Hatshepsut</title>
+    <meta name="description" content="Hatshepsut: Modern web application" />
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -24,7 +21,7 @@
 
     <!-- Vite Assets -->
     @vite
-    @vite(['resources/css/globals.css', 'resources/js/theme.ts'])
+    @vite(['resources/css/globals.css', 'resources/js/app.tsx'])
 
     <!-- Fix Flash of Unstyled Content (FOUC) -->
     <script>
@@ -33,13 +30,7 @@
         if (theme === 'dark') document.documentElement.classList.add('dark')
       })()
     </script>
-
-    <!-- Additional head content from child views -->
-    @yield('head')
   </head>
 
-  <body class="flex min-h-dvh flex-col font-sans antialiased">
-    @include('components.header')
-    @yield('content')
-  </body>
+  <body id="root" class="flex min-h-dvh flex-col font-sans antialiased"></body>
 </html>
