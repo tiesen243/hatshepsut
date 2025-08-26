@@ -6,11 +6,11 @@
   "scripts": {
     "dev": [
       "Composer\\Config::disableProcessTimeout",
-      "MODE=development npx concurrently -c=\"#FF2D20,#646CFF\" \"php -S 0.0.0.0:8000 -t public\" \"npm run dev\" --names=server,vite --kill-others"
+      "./node_modules/.bin/cross-env ENV=development npx concurrently -c=\"#FF2D20,#646CFF\" \"php -S 0.0.0.0:8000 -t public\" \"npm run dev\" --names=server,vite --kill-others"
     ],
     "serve": [
       "Composer\\Config::disableProcessTimeout",
-      "MODE=production php -S 0.0.0.0:8000 -t public"
+      "./node_modules/.bin/cross-env ENV=production php -S 0.0.0.0:8000 -t public"
     ],
     "post-create-project-cmd": [
       "@php -r \"@unlink('composer.lock');\"",

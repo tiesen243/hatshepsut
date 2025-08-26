@@ -11,20 +11,18 @@ use Framework\Http\Response;
 
 class Application
 {
-  private array $config;
-
   public function __construct(private string $basePath)
   {
-    $this->config = require_once $basePath . '/app/config.php';
+    $config = require_once $basePath . '/app/config.php';
 
-    if ($this->config['database']['enabled']) {
-      Database::connect($this->config['database']);
+    if ($config['database']['enabled']) {
+      Database::connect($config['database']);
     }
 
     Template::create(
       $basePath,
-      $this->config['vite_url'],
-      $this->config['mode'],
+      $config['vite_url'],
+      $config['env'] === 'development',
     );
 
     $this->loadRoutes();

@@ -1,8 +1,6 @@
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 import { useTheme } from '@/hooks/use-theme'
-import { cn } from '@/lib/utils'
-import { SunIcon, MoonIcon, Loader2Icon } from 'lucide-react'
-import { NavLink } from 'react-router'
+import { SunIcon, MoonIcon } from 'lucide-react'
 
 export function Header() {
   const { theme, toggleTheme } = useTheme()
@@ -14,28 +12,6 @@ export function Header() {
           Hatshepsut
         </a>
 
-        <nav className="flex flex-1 items-center justify-end gap-2">
-          {navs.map((nav) => (
-            <NavLink
-              key={nav.href}
-              to={nav.href}
-              className={({ isActive }) =>
-                cn(
-                  buttonVariants({ variant: 'link', size: 'sm' }),
-                  isActive ? 'underline' : undefined,
-                )
-              }
-            >
-              {({ isPending }) => (
-                <>
-                  {nav.name}
-                  {isPending && <Loader2Icon className="animate-spin" />}
-                </>
-              )}
-            </NavLink>
-          ))}
-        </nav>
-
         <Button onClick={toggleTheme} variant="ghost" size="icon">
           {theme === 'light' ? <MoonIcon /> : <SunIcon />}
         </Button>
@@ -43,8 +19,3 @@ export function Header() {
     </header>
   )
 }
-
-const navs = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/about' },
-]

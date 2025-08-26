@@ -31,11 +31,16 @@ COPY composer.json ./
 RUN composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
 
 # Copy application source code
-COPY . .
+COPY app ./app
+COPY public ./public
+COPY resources/views ./resources/views
+COPY routes ./routes
+COPY src ./src
 
 # Copy built frontend assets from builder stage
-COPY --from=builder /build/public ./public
+COPY --from=builder /build/public/build ./public/build
 
 # Start the application
 EXPOSE 8000
-CMD ["composer", "serve"]
+ENV ENV=production
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]

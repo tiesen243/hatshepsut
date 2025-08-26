@@ -8,13 +8,7 @@ import Index from '@/routes'
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
-    children: [
-      { index: true, element: <Index /> },
-      {
-        path: '/about',
-        lazy: () => import('@/routes/about'),
-      },
-    ],
+    children: [{ index: true, element: <Index /> }],
     ErrorBoundary,
     HydrateFallback,
   },
