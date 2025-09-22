@@ -1,10 +1,5 @@
 import { createIcons, Sun, Moon } from 'lucide'
-createIcons({
-  icons: {
-    Sun,
-    Moon,
-  },
-})
+createIcons({ icons: { Sun, Moon } })
 
 let resolvedTheme
 ;(function () {

@@ -3,22 +3,24 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite",
-    "format": "prettier --check . --cache --cache-location .cache/prettier",
-    "format:fix": "prettier --check . --write --cache --cache-location .cache/prettier"
+    "dev": "cross-env APP_ENV=development concurrently -c=\"#777BB4,#646CFF\" \"php -S 0.0.0.0:8000 -t public\" \"vite\" --names=server,vite --kill-others",
+    "format": "cross-env PHP_CS_FIXER_IGNORE_ENV=1 concurrently -c=\"#F7B93E,#777BB4\" \"prettier --check . --cache --cache-location .cache/prettier\" \"./vendor/bin/php-cs-fixer check --using-cache=yes --cache-file=.cache/php-cs-fixer\" --names=prettier,php-cs-fixer",
+    "format:fix": "cross-env PHP_CS_FIXER_IGNORE_ENV=1 concurrently -c=\"#F7B93E,#777BB4\" \"prettier --check . --write --cache --cache-location .cache/prettier\" \"./vendor/bin/php-cs-fixer fix --using-cache=yes --cache-file=.cache/php-cs-fixer\" --names=prettier,php-cs-fixer",
+    "start": "cross-env APP_ENV=production php -S 0.0.0.0:8000 -t public",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "lucide": "^0.542.0"
+    "lucide": "^0.544.0"
   },
   "devDependencies": {
-    "@prettier/plugin-php": "^0.24.0",
-    "@tailwindcss/vite": "^4.1.12",
-    "@types/node": "^24.3.0",
+    "@tailwindcss/vite": "^4.1.13",
+    "@types/node": "^24.5.2",
+    "concurrently": "^9.2.1",
     "cross-env": "^10.0.0",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "tailwindcss": "^4.1.12",
+    "tailwindcss": "^4.1.13",
     "typescript": "^5.9.2",
-    "vite": "^7.1.3"
+    "vite": "^7.1.7"
   }
 }

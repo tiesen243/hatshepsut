@@ -1,33 +1,22 @@
 const rootElement = document.getElementById('root') as HTMLElement
-rootElement.innerHTML = /* HTML */ `<pre
-    id="status"
-    class="mb-8 overflow-x-auto rounded-md bg-secondary p-4 text-secondary-foreground shadow-md"
-  >
-${JSON.stringify(
-      {
-        status: 'Loading...',
-        database: 'Loading...',
-        timestamp: new Date().toISOString(),
-        message: 'Loading...',
-      },
-      null,
-      2,
-    )}</pre
-  >
+rootElement.innerHTML = /* HTML */ `
+  <div class="text-center">
+    <h1 class="mb-8 text-5xl leading-tight font-bold">Vite + TypeScript</h1>
+    <div class="p-8">
+      <button
+        id="counter"
+        type="button"
+        class="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-md bg-primary px-6 text-sm font-medium whitespace-nowrap text-primary-foreground shadow-xs transition-all outline-none hover:bg-primary/90 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 has-[>svg]:px-4 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
+      ></button>
+    </div>
+  </div>
+`
 
-  <p class="text-center text-lg text-muted-foreground">
-    Edit
-    <code class="mx-1 rounded-sm bg-muted px-0.5 font-mono text-sm"
-      >resources/js/index.ts</code
-    >
-    and save to test HMR
-  </p>`
-
-window.addEventListener('DOMContentLoaded', () => {
-  const statusElement = document.getElementById('status') as HTMLElement
-
-  fetch('/api/health').then(async (response) => {
-    const data = await response.json()
-    statusElement.innerText = JSON.stringify(data, null, 2)
-  })
-})
+const counterButton = document.getElementById('counter') as HTMLButtonElement
+let counter = 0
+const setCounter = (count: number) => {
+  counter = count
+  counterButton.innerHTML = `count is ${counter}`
+}
+counterButton.addEventListener('click', () => setCounter(counter + 1))
+setCounter(0)

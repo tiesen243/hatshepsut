@@ -12,7 +12,7 @@ const config = {
   singleQuote: true,
   trailingComma: 'all',
 
-  plugins: ['@prettier/plugin-php', 'prettier-plugin-tailwindcss'],
+  plugins: ['prettier-plugin-tailwindcss'],
 
   tailwindFunctions: ['cn', 'cva'],
   tailwindAttributes: ['className', 'tw'],

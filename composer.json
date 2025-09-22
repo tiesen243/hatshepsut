@@ -3,20 +3,6 @@
   "description": "A modern PHP web application framework that blends a robust backend with a streamlined frontend build process powered by Vite",
   "license": "MIT",
   "type": "project",
-  "scripts": {
-    "dev": [
-      "Composer\\Config::disableProcessTimeout",
-      "./node_modules/.bin/cross-env ENV=development npx concurrently -c=\"#FF2D20,#646CFF\" \"php -S 0.0.0.0:8000 -t public\" \"npm run dev\" --names=server,vite --kill-others"
-    ],
-    "serve": [
-      "Composer\\Config::disableProcessTimeout",
-      "./node_modules/.bin/cross-env ENV=production php -S 0.0.0.0:8000 -t public"
-    ],
-    "post-create-project-cmd": [
-      "@php -r \"@unlink('composer.lock');\"",
-      "@php -r \"@unlink('bun.lock');\""
-    ]
-  },
   "autoload": {
     "psr-4": {
       "App\\": "app/",
@@ -24,6 +10,9 @@
     }
   },
   "require": {
-    "php": "*"
+    "php": "^8.4"
+  },
+  "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.75"
   }
 }

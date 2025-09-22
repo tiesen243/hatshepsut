@@ -11,7 +11,7 @@ return [
    * This setting determines the environment the application is
    * running in. It can be set to 'development' or 'production'.
    */
-  'env' => Env::get('ENV', 'development'),
+  'env' => Env::get('APP_ENV', 'development'),
 
   /*
    * ------------------------------------------------------------
@@ -35,7 +35,7 @@ return [
    * username, and password.
    */
   'database' => [
-    'enabled' => false,
+    'enabled' => true,
     'host' => Env::get('DB_HOST', 'localhost'),
     'port' => Env::get('DB_PORT', '3306'),
     'name' => Env::get('DB_NAME', 'test'),

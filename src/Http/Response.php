@@ -8,7 +8,8 @@ class Response
     private ?string $content = null,
     private int $statusCode = 200,
     private array $headers = [],
-  ) {}
+  ) {
+  }
 
   public function send(): void
   {

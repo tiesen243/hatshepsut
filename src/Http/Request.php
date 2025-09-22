@@ -12,7 +12,8 @@ class Request
     private array $get,
     private array $post,
     private array $files,
-  ) {}
+  ) {
+  }
 
   public static function create(): static
   {
