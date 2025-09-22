@@ -16,6 +16,7 @@ export function Header() {
         <nav className="inline-flex flex-1 items-center justify-end gap-4 [&_a]:text-muted-foreground [&_a]:hover:text-foreground [&_a]:aria-[current='page']:text-foreground">
           <NavLink to="/">Home</NavLink>
           <NavLink to="/about">About</NavLink>
+          <NavLink to="/posts">Posts</NavLink>
         </nav>
 
         <Button
