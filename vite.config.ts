@@ -1,11 +1,13 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig({
-  plugins: [tailwindcss()],
+  plugins: [react(), tailwindcss(), tsconfigPaths()],
 
   build: {
     outDir: 'public/build',

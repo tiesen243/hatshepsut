@@ -15,7 +15,6 @@ const config = {
   plugins: ['prettier-plugin-tailwindcss'],
 
   tailwindFunctions: ['cn', 'cva'],
-  tailwindAttributes: ['className', 'tw'],
   tailwindStylesheet: fileURLToPath(
     new URL('./resources/css/globals.css', import.meta.url),
   ),
