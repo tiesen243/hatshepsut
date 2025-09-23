@@ -1,7 +1,8 @@
+import { Link, NavLink } from 'react-router'
+import { MoonIcon, SunIcon } from 'lucide-react'
+
 import { Button } from '@/components/ui/button'
 import { useTheme } from '@/hooks/use-theme'
-import { MoonIcon, SunIcon } from 'lucide-react'
-import { Link, NavLink } from 'react-router'
 
 export function Header() {
   const { theme, toggleTheme } = useTheme()

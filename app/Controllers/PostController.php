@@ -41,12 +41,9 @@ class PostController extends Controller
     if (!empty($data['id'])) {
       $this->post->setId($data['id']);
     }
-    $this->post->setTitle($data['title'] ?? '')->setContent($data['content'] ?? '')->store();
+    $post = $this->post->setTitle($data['title'] ?? '')->setContent($data['content'] ?? '')->store();
 
-    return $this->json([
-      'status' => 201,
-      'message' => 'Post created successfully',
-    ]);
+    return $this->json($post->toArray());
   }
 
   public function delete(string $id): Response

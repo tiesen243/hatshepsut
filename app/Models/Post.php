@@ -20,7 +20,7 @@ class Post
   public function findMany(): array
   {
     $pdo = Database::pdo();
-    $stmt = $pdo->query('SELECT * FROM posts');
+    $stmt = $pdo->query('SELECT * FROM posts ORDER BY created_at DESC');
     $posts = [];
     while ($row = $stmt->fetch()) {
       $posts[] = new Post(
@@ -55,7 +55,7 @@ class Post
     );
   }
 
-  public function store(): void
+  public function store(): Post
   {
     $pdo = Database::pdo();
     $this->createdAt = new DateTime();
@@ -68,17 +68,19 @@ class Post
         'id' => $this->id,
         'title' => $this->title,
         'content' => $this->content,
-        'updated_at' => $this->updatedAt,
+        'updated_at' => $this->updatedAt->format('c'),
       ]);
     } else {
       $stmt = $pdo->prepare('INSERT INTO posts (id, title, content, created_at, updated_at) VALUES (UUID(), :title, :content, :created_at, :updated_at)');
       $stmt->execute([
         'title' => $this->title,
         'content' => $this->content,
-        'created_at' => $this->createdAt,
-        'updated_at' => $this->updatedAt,
+        'created_at' => $this->createdAt->format('c'),
+        'updated_at' => $this->updatedAt->format('c'),
       ]);
     }
+
+    return $this;
   }
 
   public function delete(): void

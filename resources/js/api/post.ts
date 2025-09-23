@@ -39,6 +39,26 @@ export const postOptions = {
       },
     }),
 
+  store: () =>
+    mutationOptions({
+      mutationKey: [...postFilters.all().queryKey, 'store'],
+      mutationFn: async (
+        post: Omit<Post, 'id' | 'createdAt' | 'updatedAt'> & { id?: string },
+      ) => {
+        const formData = new FormData()
+        if (post.id) formData.append('id', post.id)
+        formData.append('title', post.title)
+        formData.append('content', post.content)
+
+        const response = await fetch('/api/posts', {
+          method: 'POST',
+          body: formData,
+        })
+        if (!response.ok) throw new Error('Network response was not ok')
+        return response.json() as Promise<Post>
+      },
+    }),
+
   delete: (id: string) =>
     mutationOptions({
       mutationKey: [...postFilters.byId(id).queryKey, 'delete'],

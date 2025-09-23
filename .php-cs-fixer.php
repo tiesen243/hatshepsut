@@ -7,17 +7,17 @@ return (new PhpCsFixer\Config())
     ->setRules([
       '@PSR12' => true,
       'array_syntax' => ['syntax' => 'short'],
-      'ordered_imports' => ['sort_algorithm' => 'alpha'],
-      'single_quote' => true,
-      'trailing_comma_in_multiline' => true,
       'indentation_type' => true,
-
-      'phpdoc_trim' => true,
+      'no_trailing_whitespace' => true,
+      'ordered_imports' => ['sort_algorithm' => 'alpha'],
       'phpdoc_line_span' => [
         'property' => 'single',
         'method' => 'single',
         'const' => 'single',
       ],
+      'phpdoc_trim' => true,
+      'single_quote' => true,
+      'trailing_comma_in_multiline' => true,
     ])
     ->setIndent('  ')
     ->setRiskyAllowed(true)
