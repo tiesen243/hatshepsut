@@ -9,6 +9,7 @@ RUN bun install --frozen-lockfile
 # Copy only necessary frontend source files for build
 COPY resources ./resources
 COPY vite.config.ts vite.config.ts
+COPY tsconfig.json tsconfig.json
 
 # Build frontend assets
 RUN bun run build
