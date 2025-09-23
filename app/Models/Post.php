@@ -68,15 +68,15 @@ class Post
         'id' => $this->id,
         'title' => $this->title,
         'content' => $this->content,
-        'updated_at' => $this->updatedAt->format('Y-m-d H:i:s'),
+        'updated_at' => $this->updatedAt,
       ]);
     } else {
       $stmt = $pdo->prepare('INSERT INTO posts (id, title, content, created_at, updated_at) VALUES (UUID(), :title, :content, :created_at, :updated_at)');
       $stmt->execute([
         'title' => $this->title,
         'content' => $this->content,
-        'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
-        'updated_at' => $this->updatedAt->format('Y-m-d H:i:s'),
+        'created_at' => $this->createdAt,
+        'updated_at' => $this->updatedAt,
       ]);
     }
   }
@@ -151,8 +151,8 @@ class Post
       'id' => $this->id,
       'title' => $this->title,
       'content' => $this->content,
-      'created_at' => $this->createdAt->format('Y-m-d H:i:s'),
-      'updated_at' => $this->updatedAt->format('Y-m-d H:i:s'),
+      'createdAt' => $this->createdAt->format('c'),
+      'updatedAt' => $this->updatedAt->format('c'),
     ];
   }
 }

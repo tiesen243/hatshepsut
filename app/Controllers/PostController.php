@@ -37,7 +37,6 @@ class PostController extends Controller
   public function store(): Response
   {
     $data = $this->request->body();
-    error_log('Request Data: ' . print_r($data, true));
 
     if (!empty($data['id'])) {
       $this->post->setId($data['id']);
