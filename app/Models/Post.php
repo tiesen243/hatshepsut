@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use DateTime;
 use Framework\Core\Database;
-use Framework\Http\HttpError;
 
 class Post
 {
@@ -12,97 +10,62 @@ class Post
     private string $id = '',
     private string $title = '',
     private string $content = '',
-    private DateTime $createdAt = new DateTime(),
-    private DateTime $updatedAt = new DateTime(),
+    private \DateTime $createdAt = new \DateTime(),
+    private \DateTime $updatedAt = new \DateTime(),
   ) {
   }
 
-  public function findMany(): array
+  public static function findMany()
   {
-    $pdo = Database::pdo();
-    $stmt = $pdo->query('SELECT * FROM posts ORDER BY created_at DESC');
+    $pdo = Database::getConnection();
+
+    $stmt = $pdo->prepare('SELECT * FROM posts ORDER BY created_at DESC');
+    $stmt->execute();
+    $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
     $posts = [];
-    while ($row = $stmt->fetch()) {
+    foreach ($results as $row) {
       $posts[] = new Post(
         $row['id'],
         $row['title'],
         $row['content'],
-        new DateTime($row['created_at']),
-        new DateTime($row['updated_at'])
+        new \DateTime($row['created_at']),
+        new \DateTime($row['updated_at'])
       );
     }
+
     return $posts;
   }
 
-  public function findOne(): Post
+  public static function findOne(string $id): ?Post
   {
-    $pdo = Database::pdo();
+    $pdo = Database::getConnection();
+
     $stmt = $pdo->prepare('SELECT * FROM posts WHERE id = :id');
-    $stmt->execute(['id' => $this->id]);
-    $row = $stmt->fetch();
-
-    if (!$row) {
-      throw HttpError::notFound('Post not found');
+    $stmt->execute(['id' => $id]);
+    $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+    if ($row) {
+      return new Post(
+        $row['id'],
+        $row['title'],
+        $row['content'],
+        new \DateTime($row['created_at']),
+        new \DateTime($row['updated_at'])
+      );
     }
 
-
-    return new Post(
-      $row['id'],
-      $row['title'],
-      $row['content'],
-      new DateTime($row['created_at']),
-      new DateTime($row['updated_at'])
-    );
+    return null;
   }
 
-  public function store(): Post
-  {
-    $pdo = Database::pdo();
-    $this->createdAt = new DateTime();
-    $this->updatedAt = new DateTime();
-
-    if ($this->id) {
-      $this->findOne();
-      $stmt = $pdo->prepare('UPDATE posts SET title = :title, content = :content, updated_at = :updated_at WHERE id = :id');
-      $stmt->execute([
-        'id' => $this->id,
-        'title' => $this->title,
-        'content' => $this->content,
-        'updated_at' => $this->updatedAt->format('c'),
-      ]);
-    } else {
-      $stmt = $pdo->prepare('INSERT INTO posts (id, title, content, created_at, updated_at) VALUES (UUID(), :title, :content, :created_at, :updated_at)');
-      $stmt->execute([
-        'title' => $this->title,
-        'content' => $this->content,
-        'created_at' => $this->createdAt->format('c'),
-        'updated_at' => $this->updatedAt->format('c'),
-      ]);
-    }
-
-    return $this;
-  }
-
-  public function delete(): void
-  {
-    if (!$this->id) {
-      throw new \Exception('ID is required to delete a post.');
-    }
-
-    $pdo = Database::pdo();
-
-    $this->findOne();
-    $stmt = $pdo->prepare('DELETE FROM posts WHERE id = :id');
-    $stmt->execute(['id' => $this->id]);
-  }
-
+  // Getters and Setters
   public function getId(): string
   {
     return $this->id;
   }
+
   public function setId(string $id): self
   {
     $this->id = $id;
+
     return $this;
   }
 
@@ -110,9 +73,11 @@ class Post
   {
     return $this->title;
   }
+
   public function setTitle(string $title): self
   {
     $this->title = $title;
+
     return $this;
   }
 
@@ -124,37 +89,43 @@ class Post
   public function setContent(string $content): self
   {
     $this->content = $content;
+
     return $this;
   }
 
-  public function getCreatedAt(): DateTime
+  public function getCreatedAt(): \DateTime
   {
     return $this->createdAt;
   }
-  public function setCreatedAt(DateTime $createdAt): self
+
+  public function setCreatedAt(\DateTime $createdAt): self
   {
     $this->createdAt = $createdAt;
+
     return $this;
   }
 
-  public function getUpdatedAt(): DateTime
+  public function getUpdatedAt(): \DateTime
   {
     return $this->updatedAt;
   }
-  public function setUpdatedAt(DateTime $updatedAt): self
+
+  public function setUpdatedAt(\DateTime $updatedAt): self
   {
     $this->updatedAt = $updatedAt;
+
     return $this;
   }
 
+  // Convert to array
   public function toArray(): array
   {
     return [
       'id' => $this->id,
       'title' => $this->title,
       'content' => $this->content,
-      'createdAt' => $this->createdAt->format('c'),
-      'updatedAt' => $this->updatedAt->format('c'),
+      'createdAt' => $this->createdAt->format(\DateTime::ATOM),
+      'updatedAt' => $this->updatedAt->format(\DateTime::ATOM),
     ];
   }
 }

@@ -1,11 +1,11 @@
 <?php
 
-use App\Controllers\PostController;
+use App\Http\Controllers\PostController;
 use Framework\Core\Router;
+use Framework\Http\Response;
 
-$router = Router::getInstance();
+Router::get('/api/health', function () {
+  return Response::json(['status' => 'ok', 'timestamp' => time()]);
+});
 
-$router->get('/api/posts', [PostController::class, 'getPosts']);
-$router->post('/api/posts', [PostController::class, 'store']);
-$router->get('/api/posts/:id', [PostController::class, 'getPost']);
-$router->post('/api/posts/:id', [PostController::class, 'delete']);
+Router::get('/api/posts', [PostController::class, 'getPosts']);

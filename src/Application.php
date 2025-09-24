@@ -5,84 +5,54 @@ namespace Framework;
 use Framework\Core\Database;
 use Framework\Core\Router;
 use Framework\Core\Template;
-use Framework\Http\HttpError;
 use Framework\Http\Request;
-use Framework\Http\Response;
 
 class Application
 {
+  private $request;
+
   public function __construct(private string $basePath)
   {
-    $config = require_once $basePath . '/app/config.php';
+    $appConfig = require_once $this->basePath.'/config/app.php';
 
-    if ($config['database']['enabled']) {
-      Database::connect($config['database']);
-    }
+    // Initialize request
+    $this->request = Request::create();
 
+    // Setup database connection
+    $this->setupDatabase();
+
+    // Initialize template engine
     Template::create(
-      $basePath,
-      $config['vite_url'],
-      $config['env'] === 'development',
+      $this->basePath.'/resources/views',
+      $this->basePath.'/.cache/views',
+      $appConfig,
     );
 
-    $this->loadRoutes();
+    // Load routes
+    require_once $this->basePath.'/routes/api.php';
+
+    require_once $this->basePath.'/routes/web.php';
   }
 
   public function run()
   {
-    $request = Request::create();
-    [$found, $handler, $vars] = Router::getRoute(
-      $request->getMethod(),
-      $request->getUri(),
-    );
-
-    if (!$found) {
-      return HttpError::notFound()->send();
-    }
-
-    try {
-      if (is_callable($handler)) {
-        $response = call_user_func($handler, $vars);
-      } elseif (is_array($handler) && count($handler) === 2) {
-        [$controller, $method] = $handler;
-        $controller = new $controller();
-        $controller->setRequest($request);
-
-        if (method_exists($controller, $method)) {
-          $response = call_user_func_array([$controller, $method], $vars);
-        } else {
-          $response = HttpError::notFound('Method Not Found');
-        }
-      } else {
-        $response = HttpError::forbidden('Invalid Handler');
-      }
-
-      if (!$response instanceof Response && !$response instanceof HttpError) {
-        $response = new Response($response);
-      }
-    } catch (\Throwable $e) {
-      error_log('Error: ' . $e->getMessage());
-      if ($e instanceof HttpError) {
-        $response = $e;
-      } else {
-        $response = HttpError::serverError(
-          'Internal Server Error',
-          $e->getMessage(),
-        );
-      }
-    }
-
-    $response->send();
+    $this->setCors();
+    Router::dispatch($this->request);
   }
 
-  private function loadRoutes()
+  private function setCors()
   {
-    $routesDir = $this->basePath . '/routes';
-    $files = scandir($routesDir);
-    foreach ($files as $file) {
-      if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
-        require_once $routesDir . '/' . $file;
-      }
-    }
+    $corsConfig = require_once $this->basePath.'/config/cors.php';
+    header('Access-Control-Allow-Origin'.implode(', ', $corsConfig['allowed_origins']));
+    header('Access-Control-Allow-Methods'.implode(', ', $corsConfig['allowed_methods']));
+    header('Access-Control-Allow-Headers'.implode(', ', $corsConfig['allowed_headers']));
+    header('Access-Control-Allow-Credentials'.($corsConfig['supports_credentials'] ? 'true' : 'false'));
+    header('Access-Control-Max-Age'.$corsConfig['max_age']);
+  }
+
+  private function setupDatabase()
+  {
+    $databaseConfig = require_once $this->basePath.'/config/database.php';
+    Database::connect($databaseConfig);
   }
 }

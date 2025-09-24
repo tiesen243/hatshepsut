@@ -4,46 +4,39 @@ namespace Framework\Http;
 
 class Request
 {
-  private static $instance = null;
+  private static ?Request $instance = null;
 
-  private function __construct(
-    private array $server,
-    private array $cookies,
+  public function __construct(
     private array $get,
     private array $post,
+    private array $server,
+    private array $cookies,
     private array $files,
   ) {
   }
 
-  public static function create(): static
+  public static function create(): Request
   {
-    if (self::$instance === null) {
-      self::$instance = new static($_SERVER, $_COOKIE, $_GET, $_POST, $_FILES);
+    if (null === self::$instance) {
+      self::$instance = new static($_GET, $_POST, $_SERVER, $_COOKIE, $_FILES);
     }
 
     return self::$instance;
   }
 
-  public function getUri(): string
+  public static function getInstance(): ?Request
   {
-    $uri = $_SERVER['REQUEST_URI'] ?: '/';
-    $parsedUri = parse_url($uri) ?: '';
-    return $parsedUri['path'] ?? '/';
+    return self::$instance;
   }
 
-  public function getMethod(): string
+  public function server(string $key, $default = null)
   {
-    return $_SERVER['REQUEST_METHOD'] ?? 'GET';
+    return $this->server[$key] ?? $default;
   }
 
-  public function getServer(): array
+  public function cookie(string $key, $default = null)
   {
-    return $this->server;
-  }
-
-  public function getCookies(): array
-  {
-    return $this->cookies;
+    return $this->cookies[$key] ?? $default;
   }
 
   public function query(): array
@@ -51,7 +44,7 @@ class Request
     return $this->get;
   }
 
-  public function body(): array
+  public function input(): array
   {
     return array_merge($this->post, $this->files);
   }

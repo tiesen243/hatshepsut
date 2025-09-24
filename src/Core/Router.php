@@ -2,62 +2,200 @@
 
 namespace Framework\Core;
 
+use Framework\Http\Request;
+use Framework\Http\Response;
+
 class Router
 {
-  private static Router $instance;
   private static array $routes = [];
+  private static array $middlewares = [];
 
-  public function get(string $path, $handler): static
+  private string $lastMethod = '';
+  private string $lastPath = '';
+
+  /**
+   * Register a GET route.
+   *
+   * @param string $path     the URL path to match
+   * @param mixed  $callback the handler function or method for the route
+   *
+   * @return self returns a new Router instance
+   */
+  public static function get(string $path, mixed $callback): self
   {
-    self::$routes['GET'][$path] = $handler;
+    return self::registerRoute($path, 'GET', $callback);
+  }
+
+  /**
+   * Register a POST route.
+   *
+   * @param string $path     the URL path to match
+   * @param mixed  $callback the handler function or method for the route
+   *
+   * @return self returns a new Router instance
+   */
+  public static function post(string $path, mixed $callback): self
+  {
+    return self::registerRoute($path, 'POST', $callback);
+  }
+
+  /**
+   * Register a middleware to be executed before route handling.
+   *
+   * @param string   $name       the name of the middleware
+   * @param callable $middleware the middleware function to execute
+   *
+   * @return self returns a new Router instance
+   */
+  public static function registerMiddleware(string $name, callable $middleware): self
+  {
+    self::$middlewares[$name] = $middleware;
+
+    return new self();
+  }
+
+  /**
+   * Attach a middleware to the last registered route.
+   *
+   * @param string $name the name of the middleware to attach
+   *
+   * @return self returns the current Router instance
+   *
+   * @throws \Exception if the middleware is not found or no route is registered
+   */
+  public function middleware(string $name): self
+  {
+    if (!isset(self::$middlewares[$name])) {
+      throw new \Exception("Middleware '{$name}' not found.");
+    }
+    if ($this->lastMethod && $this->lastPath) {
+      self::$routes[$this->lastMethod][$this->lastPath]['middlewares'][] = $name;
+    }
+
     return $this;
   }
 
-  public function post(string $path, $handler): static
+  /**
+   * Dispatch the request to the appropriate route handler.
+   *
+   * @param Request $request the incoming HTTP request
+   */
+  public static function dispatch(Request $request): void
   {
-    self::$routes['POST'][$path] = $handler;
-    return $this;
-  }
+    $method = $request->server('REQUEST_METHOD');
+    $path = $request->server('REQUEST_URI');
+    $routes = self::$routes[$method] ?? [];
 
-  public static function getInstance(): static
-  {
-    if (!isset(self::$instance)) {
-      self::$instance = new static();
-    }
-    return self::$instance;
-  }
+    [$matchedRoute, $matchedParams] = self::matchRoute($routes, $path);
 
-  public static function getRoute(string $method, string $path)
-  {
-    if (isset(self::$routes[$method][$path])) {
-      return [1, self::$routes[$method][$path], []];
-    }
+    if (!$matchedRoute) {
+      Response::json(['status' => 404, 'message' => 'Not Found'], 404)->send();
 
-    foreach (self::$routes[$method] ?? [] as $route => $handler) {
-      if (strpos($route, '*') !== false || strpos($route, ':') === false) {
-        continue;
-      }
-
-      $pattern = preg_replace('#:([\w]+)#', '([^/]+)', $route);
-      $pattern = "#^$pattern$#";
-      if (preg_match($pattern, $path, $matches)) {
-        array_shift($matches);
-        preg_match_all('#:([\w]+)#', $route, $paramNames);
-        $paramNames = $paramNames[1];
-        $vars = array_combine($paramNames, $matches);
-        return [1, $handler, $vars ?: []];
-      }
+      return;
     }
 
-    foreach (self::$routes[$method] ?? [] as $route => $handler) {
-      if (substr($route, -2) === '/*') {
-        $base = rtrim(substr($route, 0, -2), '/');
-        if ($base === '' || strpos($path, $base) === 0) {
-          return [1, $handler, []];
+    try {
+      foreach ($matchedRoute['middlewares'] as $middlewareName) {
+        $middlewareResponse = self::$middlewares[$middlewareName]($request);
+        if ($middlewareResponse instanceof Response) {
+          $middlewareResponse->send();
+
+          return;
         }
       }
+
+      $callback = $matchedRoute['callback'];
+      $response = null;
+
+      if (is_array($callback) && 2 === count($callback)) {
+        [$class, $method] = $callback;
+        $response = (new $class())->{$method}($request, ...$matchedParams);
+      } elseif (is_callable($callback)) {
+        $response = $callback($request, ...$matchedParams);
+      } else {
+        throw new \Exception('Invalid route callback.');
+      }
+
+      if ($response instanceof Response) {
+        $response->send();
+      } else {
+        (new Response($response))->send();
+      }
+    } catch (\Throwable $e) {
+      Response::json(['status' => 500, 'message' => 'Internal Server Error', 'error' => $e->getMessage()], 500)->send();
+
+      return;
+    }
+  }
+
+  /**
+   * Register a route with method, compiling regex and extracting param names.
+   *
+   * @param string $path     the URL path to match
+   * @param string $method   The HTTP method (e.g., 'GET', 'POST').
+   * @param mixed  $callback the handler function or method for the route
+   *
+   * @return self returns a new Router instance
+   */
+  private static function registerRoute(string $path, string $method, mixed $callback): self
+  {
+    [$regex, $paramNames] = self::compileRoutePattern($path);
+    self::$routes[$method][$path] = [
+      'regex' => $regex,
+      'paramNames' => $paramNames,
+
+      'callback' => $callback,
+      'middlewares' => [],
+    ];
+
+    $instance = new self();
+    $instance->lastMethod = $method;
+    $instance->lastPath = $path;
+
+    return $instance;
+  }
+
+  /**
+   * Compile a route pattern to regex and extract parameter names.
+   *
+   * @return array [string $regex, array $paramNames]
+   */
+  private static function compileRoutePattern(string $path): array
+  {
+    $paramNames = [];
+    $regex = preg_replace_callback(
+      '#:([\w]+)#',
+      function ($matches) use (&$paramNames) {
+        $paramNames[] = $matches[1];
+
+        return '([^/]+)';
+      },
+      $path
+    );
+    $regex = str_replace('/*', '/.*', $regex);
+    $regex = '#^'.$regex.'$#';
+
+    return [$regex, $paramNames];
+  }
+
+  /**
+   * Match the request path to a registered route.
+   *
+   * @return array [matchedRoute|null, matchedParams]
+   */
+  private static function matchRoute(array $routes, string $path): array
+  {
+    foreach ($routes as $routePattern => $routeInfo) {
+      if (!isset($routeInfo['regex'])) {
+        continue;
+      }
+      if (preg_match($routeInfo['regex'], $path, $matches)) {
+        array_shift($matches);
+
+        return [$routeInfo, $matches];
+      }
     }
 
-    return [0, null, []];
+    return [null, []];
   }
 }

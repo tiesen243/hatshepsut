@@ -1,40 +1,26 @@
 {
+  "name": "hatshepsut",
+  "version": "1.0.0",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "dev": "cross-env APP_ENV=development concurrently -c=\"#777BB4,#646CFF\" \"php -S 0.0.0.0:8000 -t public\" \"vite\" --names=server,vite --kill-others",
-    "format": "cross-env PHP_CS_FIXER_IGNORE_ENV=1 concurrently -c=\"#F7B93E,#777BB4\" \"prettier --check . --cache --cache-location .cache/prettier\" \"./vendor/bin/php-cs-fixer check --using-cache=yes --cache-file=.cache/php-cs-fixer\" --names=prettier,php-cs-fixer",
-    "format:fix": "cross-env PHP_CS_FIXER_IGNORE_ENV=1 concurrently -c=\"#F7B93E,#777BB4\" \"prettier --check . --write --cache --cache-location .cache/prettier\" \"./vendor/bin/php-cs-fixer fix --using-cache=yes --cache-file=.cache/php-cs-fixer\" --names=prettier,php-cs-fixer",
-    "start": "cross-env APP_ENV=production php -S 0.0.0.0:8000 -t public",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@radix-ui/react-label": "^2.1.7",
-    "@radix-ui/react-slot": "^1.2.3",
-    "@tanstack/react-query": "^5.90.1",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "lucide-react": "^0.544.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "react-router": "^7.9.1",
-    "tailwind-merge": "^3.3.1"
+    "dev": "bun with-env concurrently -c=\"#646CFF,#777BB4\" \"bun run dev:vite\" \"bun run dev:php\" --names=vite,php",
+    "dev:php": "php -S localhost:8000 -t public",
+    "dev:vite": "vite",
+    "format": "concurrently -c=\"#F7B93E,#777BB4\" \"bun run format:js\" \"bun run format:php\" --names=prettuer,php-cs-fixer",
+    "format:js": "prettier --write . --cache --cache-location .cache/prettier",
+    "format:php": "bun with-env ./vendor/bin/php-cs-fixer fix --using-cache yes --cache-file .cache/php-cs-fixer",
+    "with-env": "dotenv -e .env --"
   },
   "devDependencies": {
-    "@ianvs/prettier-plugin-sort-imports": "^4.7.0",
     "@tailwindcss/vite": "^4.1.13",
     "@types/node": "^24.5.2",
-    "@types/react": "^19.1.13",
-    "@types/react-dom": "^19.1.9",
-    "@vitejs/plugin-react-swc": "^4.1.0",
     "concurrently": "^9.2.1",
-    "cross-env": "^10.0.0",
+    "dotenv-cli": "^10.0.0",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
     "tailwindcss": "^4.1.13",
-    "typescript": "^5.9.2",
-    "vite": "^7.1.7",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite": "^7.1.7"
   }
 }
