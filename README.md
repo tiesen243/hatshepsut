@@ -37,13 +37,12 @@ bun install
 
 3. Set up environment variables:
 
-Copy the `.env.example` file to `.env` and configure your environment settings, such as:
-
-- `DB_HOST`: The hostname of your database server (e.g., `127.0.0.1`)
-- `DB_PORT`: The port number your database server is running on (usually `3306` for MySQL)
-- `DB_DATABASE`: The name of your database (e.g., `my_app_db`)
-- `DB_USERNAME`: Your database user (e.g., `root`)
-- `DB_PASSWORD`: Your database password (if applicable)
+   Copy the `.env.example` file to `.env` and configure your environment settings, such as:
+   - `DB_HOST`: The hostname of your database server (e.g., `127.0.0.1`)
+   - `DB_PORT`: The port number your database server is running on (usually `3306` for MySQL)
+   - `DB_DATABASE`: The name of your database (e.g., `my_app_db`)
+   - `DB_USERNAME`: Your database user (e.g., `root`)
+   - `DB_PASSWORD`: Your database password (if applicable)
 
 4. Start the application:
 
