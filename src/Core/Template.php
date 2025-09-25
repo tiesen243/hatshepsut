@@ -14,18 +14,14 @@ class Template
     private array $appConfig = [],
   ) {
     if (!is_dir($viewDir) || !is_readable($viewDir)) {
-      throw new \InvalidArgumentException(
-        "View directory '{$viewDir}' does not exist or is not readable.",
-      );
+      throw new \InvalidArgumentException("View directory '{$viewDir}' does not exist or is not readable.");
     }
     if (!is_dir($cacheDir) || !is_writable($cacheDir)) {
-      throw new \InvalidArgumentException(
-        "Cache directory '{$cacheDir}' does not exist or is not writable.",
-      );
+      throw new \InvalidArgumentException("Cache directory '{$cacheDir}' does not exist or is not writable.");
     }
 
-    $this->viewDir = rtrim($viewDir, '/\\') . DIRECTORY_SEPARATOR;
-    $this->cacheDir = rtrim($cacheDir, '/\\') . DIRECTORY_SEPARATOR;
+    $this->viewDir = rtrim($viewDir, '/\\').DIRECTORY_SEPARATOR;
+    $this->cacheDir = rtrim($cacheDir, '/\\').DIRECTORY_SEPARATOR;
   }
 
   public static function create(
@@ -74,21 +70,21 @@ class Template
   private function compile(string $template): string
   {
     $templateFile =
-      $this->viewDir .
-      str_replace('.', DIRECTORY_SEPARATOR, $template) .
+      $this->viewDir.
+      str_replace('.', DIRECTORY_SEPARATOR, $template).
       '.tpl.php';
-    $cachedFile = $this->cacheDir . md5($template) . '.php';
+    $cachedFile = $this->cacheDir.md5($template).'.php';
 
     if (
-      !file_exists($cachedFile) ||
-      filemtime($cachedFile) < filemtime($templateFile)
+      !file_exists($cachedFile)
+      || filemtime($cachedFile) < filemtime($templateFile)
     ) {
       if (file_exists($templateFile)) {
         $content = file_get_contents($templateFile);
         $parsed = $this->parse($content);
         file_put_contents($cachedFile, $parsed);
       } else {
-        echo 'could not find template file: ' . $templateFile;
+        echo 'could not find template file: '.$templateFile;
       }
     }
 
@@ -110,10 +106,10 @@ class Template
       function ($matches) {
         [, $name, $default] = $matches + [null, null, ''];
 
-        return '<?php echo $this->sections["' .
-          $name .
-          '"] ?? "' .
-          addslashes($default) .
+        return '<?php echo $this->sections["'.
+          $name.
+          '"] ?? "'.
+          addslashes($default).
           '"; ?>';
       },
       $content,
@@ -201,11 +197,9 @@ class Template
           }
         } else {
           $manifestPath =
-            $this->appConfig['base_path'] . '/public/build/.vite/manifest.json';
+            $this->appConfig['base_path'].'/public/build/.vite/manifest.json';
           if (!file_exists($manifestPath)) {
-            throw new \Exception(
-              "Vite manifest file not found at '{$manifestPath}'.",
-            );
+            throw new \Exception("Vite manifest file not found at '{$manifestPath}'.");
           }
           $manifest = json_decode(file_get_contents($manifestPath), true);
 

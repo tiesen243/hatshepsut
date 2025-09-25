@@ -40,7 +40,7 @@ return [
     ],
     'sqlite' => [
       'driver' => 'sqlite',
-      'database' => getenv('DB_DATABASE') ?: __DIR__ . 'database.sqlite',
+      'database' => getenv('DB_DATABASE') ?: __DIR__.'database.sqlite',
     ],
     'postgres' => [
       'driver' => 'pgsql',

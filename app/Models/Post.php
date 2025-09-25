@@ -12,7 +12,8 @@ class Post
     private string $content = '',
     private \DateTime $createdAt = new \DateTime(),
     private \DateTime $updatedAt = new \DateTime(),
-  ) {}
+  ) {
+  }
 
   public static function findMany()
   {
@@ -23,7 +24,7 @@ class Post
     $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
     return array_map(
-      fn($result) => new Post(
+      fn ($result) => new Post(
         $result['id'],
         $result['title'],
         $result['content'],

@@ -10,7 +10,8 @@ class Response
     private ?string $content = null,
     private int $statusCode = 200,
     private array $headers = [],
-  ) {}
+  ) {
+  }
 
   public static function json(
     $data,

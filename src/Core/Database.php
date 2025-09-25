@@ -44,9 +44,7 @@ class Database
     try {
       $this->pdo = new \PDO($dsn, $username, $password, $options);
     } catch (\PDOException $e) {
-      throw new \RuntimeException(
-        'Database connection failed: ' . $e->getMessage(),
-      );
+      throw new \RuntimeException('Database connection failed: '.$e->getMessage());
     }
   }
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class='dark'>
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -19,9 +19,9 @@
     @vite
     @vite(['resources/css/globals.css'])
 
-    @yield('head') 
+    @yield('head')
   </head>
-  <body class='min-h-dvh flex flex-col font-sans antialiased'>
+  <body class="flex min-h-dvh flex-col font-sans antialiased">
     @yield('content')
 
     <script>

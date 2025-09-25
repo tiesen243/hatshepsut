@@ -181,7 +181,7 @@ class Router
       $path,
     );
     $regex = str_replace('/*', '/.*', $regex);
-    $regex = '#^' . $regex . '$#';
+    $regex = '#^'.$regex.'$#';
 
     return [$regex, $paramNames];
   }
