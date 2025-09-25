@@ -11,7 +11,7 @@ return [
   | you may use many connections at once using the Database library.
   |
   */
-  'default' => getenv('DB_CONNECTION') ?: 'mysql',
+  'default' => getenv('DB_CONNECTION') ?: '',
 
   /*
   |--------------------------------------------------------------------------

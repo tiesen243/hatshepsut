@@ -88,7 +88,7 @@ class Router
   public static function dispatch(Request $request): void
   {
     $method = $request->server('REQUEST_METHOD');
-    $path = $request->server('REQUEST_URI');
+    $path = rtrim($request->server('REQUEST_URI'), '/') ?: '/';
     $routes = self::$routes[$method] ?? [];
 
     [$matchedRoute, $matchedParams] = self::matchRoute($routes, $path);

@@ -20,6 +20,7 @@ class PostController
   {
     $post = Post::findOne($id);
     if (!$post) return Response::view('errors.404', [], 404);
+
     return Response::view('routes.posts.show', ['post' => $post]);
   }
 
@@ -49,6 +50,7 @@ class PostController
   {
     $post = Post::findOne($id);
     if ($post) $post->delete();
+
     return Response::redirect('/posts');
   }
 }

@@ -9,6 +9,10 @@ class Database
 
   public function __construct(private array $config)
   {
+    if (empty($config['default']) || !isset($config['connections'][$config['default']])) {
+      throw new \InvalidArgumentException('Invalid default database connection.');
+    }
+
     $connection = $config['connections'][$config['default']];
     $driver = $connection['driver'];
 
