@@ -9,3 +9,4 @@ Router::get('/api/health', function () {
 });
 
 Router::get('/api/posts', [PostController::class, 'getPosts']);
+Router::post('/api/posts', [PostController::class, 'create']);

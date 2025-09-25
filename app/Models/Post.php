@@ -22,18 +22,14 @@ class Post
     $stmt = $pdo->prepare('SELECT * FROM posts ORDER BY created_at DESC');
     $stmt->execute();
     $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    $posts = [];
-    foreach ($results as $row) {
-      $posts[] = new Post(
-        $row['id'],
-        $row['title'],
-        $row['content'],
-        new \DateTime($row['created_at']),
-        new \DateTime($row['updated_at'])
-      );
-    }
 
-    return $posts;
+    return array_map(fn ($result) => new Post(
+      $result['id'],
+      $result['title'],
+      $result['content'],
+      new \DateTime($result['created_at']),
+      new \DateTime($result['updated_at'])
+    ), $results);
   }
 
   public static function findOne(string $id): ?Post
@@ -43,17 +39,15 @@ class Post
     $stmt = $pdo->prepare('SELECT * FROM posts WHERE id = :id');
     $stmt->execute(['id' => $id]);
     $row = $stmt->fetch(\PDO::FETCH_ASSOC);
-    if ($row) {
-      return new Post(
-        $row['id'],
-        $row['title'],
-        $row['content'],
-        new \DateTime($row['created_at']),
-        new \DateTime($row['updated_at'])
-      );
-    }
 
-    return null;
+    return $row ?
+       new Post(
+         $row['id'],
+         $row['title'],
+         $row['content'],
+         new \DateTime($row['created_at']),
+         new \DateTime($row['updated_at'])
+       ) : null;
   }
 
   // Getters and Setters

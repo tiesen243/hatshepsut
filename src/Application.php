@@ -43,11 +43,11 @@ class Application
   private function setCors()
   {
     $corsConfig = require_once $this->basePath.'/config/cors.php';
-    header('Access-Control-Allow-Origin'.implode(', ', $corsConfig['allowed_origins']));
-    header('Access-Control-Allow-Methods'.implode(', ', $corsConfig['allowed_methods']));
-    header('Access-Control-Allow-Headers'.implode(', ', $corsConfig['allowed_headers']));
-    header('Access-Control-Allow-Credentials'.($corsConfig['supports_credentials'] ? 'true' : 'false'));
-    header('Access-Control-Max-Age'.$corsConfig['max_age']);
+    header('Access-Control-Allow-Origin: '.implode(', ', $corsConfig['allowed_origins']));
+    header('Access-Control-Allow-Methods: '.implode(', ', $corsConfig['allowed_methods']));
+    header('Access-Control-Allow-Headers: '.implode(', ', $corsConfig['allowed_headers']));
+    header('Access-Control-Allow-Credentials: '.($corsConfig['supports_credentials'] ? 'true' : 'false'));
+    header('Access-Control-Max-Age: '.$corsConfig['max_age']);
   }
 
   private function setupDatabase()

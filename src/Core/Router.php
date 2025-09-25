@@ -65,12 +65,11 @@ class Router
    */
   public function middleware(string $name): self
   {
-    if (!isset(self::$middlewares[$name])) {
+    if (!isset(self::$middlewares[$name]))
       throw new \Exception("Middleware '{$name}' not found.");
-    }
-    if ($this->lastMethod && $this->lastPath) {
+
+    if ($this->lastMethod && $this->lastPath)
       self::$routes[$this->lastMethod][$this->lastPath]['middlewares'][] = $name;
-    }
 
     return $this;
   }
@@ -95,14 +94,8 @@ class Router
     }
 
     try {
-      foreach ($matchedRoute['middlewares'] as $middlewareName) {
-        $middlewareResponse = self::$middlewares[$middlewareName]($request);
-        if ($middlewareResponse instanceof Response) {
-          $middlewareResponse->send();
-
-          return;
-        }
-      }
+      foreach ($matchedRoute['middlewares'] as $middlewareName)
+        self::$middlewares[$middlewareName]($request);
 
       $callback = $matchedRoute['callback'];
       $response = null;
@@ -110,21 +103,13 @@ class Router
       if (is_array($callback) && 2 === count($callback)) {
         [$class, $method] = $callback;
         $response = (new $class())->{$method}($request, ...$matchedParams);
-      } elseif (is_callable($callback)) {
-        $response = $callback($request, ...$matchedParams);
-      } else {
-        throw new \Exception('Invalid route callback.');
-      }
+      } elseif (is_callable($callback)) $response = $callback($request, ...$matchedParams);
+      else throw new \Exception('Invalid route callback.');
 
-      if ($response instanceof Response) {
-        $response->send();
-      } else {
-        (new Response($response))->send();
-      }
+      if ($response instanceof Response) $response->send();
+      else (new Response($response))->send();
     } catch (\Throwable $e) {
       Response::json(['status' => 500, 'message' => 'Internal Server Error', 'error' => $e->getMessage()], 500)->send();
-
-      return;
     }
   }
 
@@ -186,9 +171,7 @@ class Router
   private static function matchRoute(array $routes, string $path): array
   {
     foreach ($routes as $routePattern => $routeInfo) {
-      if (!isset($routeInfo['regex'])) {
-        continue;
-      }
+      if (!isset($routeInfo['regex'])) continue;
       if (preg_match($routeInfo['regex'], $path, $matches)) {
         array_shift($matches);
 

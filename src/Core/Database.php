@@ -50,18 +50,16 @@ class Database
 
   public static function connect(array $config): self
   {
-    if (null === self::$instance) {
+    if (null === self::$instance)
       self::$instance = new self($config);
-    }
 
     return self::$instance;
   }
 
   public static function getConnection(): \PDO
   {
-    if (null === self::$instance) {
+    if (null === self::$instance)
       throw new \Exception('Database not connected. Call connect() first.');
-    }
 
     return self::$instance->pdo;
   }

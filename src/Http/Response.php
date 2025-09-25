@@ -42,8 +42,7 @@ class Response
       header("{$name}: {$value}");
     }
 
-    if (null !== $this->content) {
+    if (null !== $this->content)
       echo $this->content;
-    }
   }
 }

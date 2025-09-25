@@ -10,30 +10,25 @@ class Template
 
   private function __construct(private string $viewDir, private string $cacheDir, private array $appConfig = [])
   {
-    if (!is_dir($viewDir) || !is_readable($viewDir)) {
-      throw new \InvalidArgumentException("View directory '{$viewDir}' does not exist or is not readable.");
-    }
-    if (!is_dir($cacheDir) || !is_writable($cacheDir)) {
-      throw new \InvalidArgumentException("Cache directory '{$cacheDir}' does not exist or is not writable.");
-    }
+    if (!is_dir($viewDir) || !is_readable($viewDir)) throw new \InvalidArgumentException("View directory '{$viewDir}' does not exist or is not readable.");
+    if (!is_dir($cacheDir) || !is_writable($cacheDir)) throw new \InvalidArgumentException("Cache directory '{$cacheDir}' does not exist or is not writable.");
+
     $this->viewDir = rtrim($viewDir, '/\\').DIRECTORY_SEPARATOR;
     $this->cacheDir = rtrim($cacheDir, '/\\').DIRECTORY_SEPARATOR;
   }
 
   public static function create(string $viewDir, string $cacheDir, array $appConfig): self
   {
-    if (null === self::$instance) {
+    if (null === self::$instance)
       self::$instance = new self($viewDir, $cacheDir, $appConfig);
-    }
 
     return self::$instance;
   }
 
   public static function getInstance(): self
   {
-    if (null === self::$instance) {
+    if (null === self::$instance)
       throw new \Exception('Template not initialized. Call create() first.');
-    }
 
     return self::$instance;
   }
@@ -42,9 +37,7 @@ class Template
   {
     $this->extends = '';
     $content = $this->renderPartial($template, $data);
-    if (!empty($this->extends)) {
-      $content = $this->renderPartial($this->extends, $data);
-    }
+    if (!empty($this->extends)) $content = $this->renderPartial($this->extends, $data);
 
     return $content;
   }
@@ -70,9 +63,7 @@ class Template
         $content = file_get_contents($templateFile);
         $parsed = $this->parse($content);
         file_put_contents($cachedFile, $parsed);
-      } else {
-        echo 'could not find template file: '.$templateFile;
-      }
+      } else echo 'could not find template file: '.$templateFile;
     }
 
     return $cachedFile;
@@ -135,40 +126,27 @@ class Template
         $viteUrl = rtrim($this->appConfig['vite_url'], '/');
         $tags = [];
 
-        if (empty($matches[1]) && 'development' === $this->appConfig['env']) {
+        if (empty($matches[1]) && 'development' === $this->appConfig['env'])
           return "<script type=\"module\" src=\"{$viteUrl}/@vite/client\"></script>";
-        }
 
         $assets = array_map('trim', explode(',', str_replace(['"', "'"], '', $matches[1])));
-        if (empty($assets)) {
-          return '';
-        }
+        if (empty($assets)) return '';
 
         if ('development' === $this->appConfig['env']) {
           foreach ($assets as $asset) {
-            if (preg_match('/\.(js|ts|jsx|tsx)$/i', $asset)) {
-              $tags[] = "<script type=\"module\" src=\"{$viteUrl}/{$asset}\"></script>";
-            } elseif (preg_match('/\.(css|sass|scss|less|styl)$/i', $asset)) {
-              $tags[] = "<link rel=\"stylesheet\" href=\"{$viteUrl}/{$asset}\" />";
-            }
+            if (preg_match('/\.(js|ts|jsx|tsx)$/i', $asset)) $tags[] = "<script type=\"module\" src=\"{$viteUrl}/{$asset}\"></script>";
+            elseif (preg_match('/\.(css|sass|scss|less|styl)$/i', $asset)) $tags[] = "<link rel=\"stylesheet\" href=\"{$viteUrl}/{$asset}\" />";
           }
         } else {
           $manifestPath = $this->appConfig['base_path'].'/public/build/.vite/manifest.json';
-          if (!file_exists($manifestPath)) {
-            throw new \Exception("Vite manifest file not found at '{$manifestPath}'.");
-          }
+          if (!file_exists($manifestPath)) throw new \Exception("Vite manifest file not found at '{$manifestPath}'.");
           $manifest = json_decode(file_get_contents($manifestPath), true);
 
           foreach ($assets as $asset) {
-            if (!isset($manifest[$asset])) {
-              continue;
-            }
+            if (!isset($manifest[$asset])) continue;
             $entryFile = $manifest[$asset]['file'];
-            if (preg_match('/\.(js|ts|jsx|tsx)$/i', $asset)) {
-              $tags[] = "<script type=\"module\" src=\"/build/{$entryFile}\"></script>";
-            } elseif (preg_match('/\.(css|sass|scss|less|styl)$/i', $asset)) {
-              $tags[] = "<link rel=\"stylesheet\" href=\"/build/{$entryFile}\" />";
-            }
+            if (preg_match('/\.(js|ts|jsx|tsx)$/i', $asset)) $tags[] = "<script type=\"module\" src=\"/build/{$entryFile}\"></script>";
+            elseif (preg_match('/\.(css|sass|scss|less|styl)$/i', $asset)) $tags[] = "<link rel=\"stylesheet\" href=\"/build/{$entryFile}\" />";
           }
         }
 
