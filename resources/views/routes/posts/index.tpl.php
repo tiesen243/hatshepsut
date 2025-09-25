@@ -4,7 +4,12 @@
 
 @section('content')
 <main class="container py-4">
-  <h1 class="text-3xl font-bold">Posts</h1>
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-3xl font-bold">Posts</h1>
+    <a href="/posts/create" class="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50 h-9 px-4 py-2 has-[>svg]:px-3">
+      Create Post
+    </a>
+  </div>
 
   @if (empty($posts))
     <p class="text-muted-foreground">No posts available.</p>

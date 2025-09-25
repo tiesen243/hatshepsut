@@ -8,5 +8,4 @@ Router::get('/api/health', function () {
   return Response::json(['status' => 'ok', 'timestamp' => time()]);
 });
 
-Router::get('/api/posts', [PostController::class, 'getPosts']);
-Router::post('/api/posts', [PostController::class, 'create']);
+Router::post('/api/posts', [PostController::class, 'store']);

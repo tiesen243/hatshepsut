@@ -44,22 +44,26 @@ class Database
     try {
       $this->pdo = new \PDO($dsn, $username, $password, $options);
     } catch (\PDOException $e) {
-      throw new \RuntimeException('Database connection failed: '.$e->getMessage());
+      throw new \RuntimeException(
+        'Database connection failed: ' . $e->getMessage(),
+      );
     }
   }
 
   public static function connect(array $config): self
   {
-    if (null === self::$instance)
+    if (null === self::$instance) {
       self::$instance = new self($config);
+    }
 
     return self::$instance;
   }
 
   public static function getConnection(): \PDO
   {
-    if (null === self::$instance)
+    if (null === self::$instance) {
       throw new \Exception('Database not connected. Call connect() first.');
+    }
 
     return self::$instance->pdo;
   }

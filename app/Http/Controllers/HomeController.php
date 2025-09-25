@@ -8,6 +8,6 @@ class HomeController
 {
   public function index(): Response
   {
-    return Response::json(['message' => 'Welcome to the Home Page!']);
+    return Response::view('routes.index');
   }
 }

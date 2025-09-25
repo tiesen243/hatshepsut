@@ -8,8 +8,7 @@ class Validator
     private array $rules = [],
     private array $data = [],
     private array $errors = [],
-  ) {
-  }
+  ) {}
 
   public function parse(array $data): self
   {
@@ -32,9 +31,21 @@ class Validator
           $this->errors[$field] = 'Value must be a string.';
           continue;
         }
-        if (!empty($literals) && $this->validateLiteral($field, $value, $literals)) continue;
-        if (isset($ops['pattern']) && $this->validatePattern($field, $value, $ops['pattern'])) continue;
-        if ($this->validateLengthOrValue($type, $field, $value, $ops)) continue;
+        if (
+          !empty($literals) &&
+          $this->validateLiteral($field, $value, $literals)
+        ) {
+          continue;
+        }
+        if (
+          isset($ops['pattern']) &&
+          $this->validatePattern($field, $value, $ops['pattern'])
+        ) {
+          continue;
+        }
+        if ($this->validateLengthOrValue($type, $field, $value, $ops)) {
+          continue;
+        }
       }
 
       if ('int' === $type || 'float' === $type) {
@@ -46,10 +57,14 @@ class Validator
           $this->errors[$field] = 'Value must be a float.';
           continue;
         }
-        if ($this->validateLengthOrValue($type, $field, $value, $ops)) continue;
+        if ($this->validateLengthOrValue($type, $field, $value, $ops)) {
+          continue;
+        }
       }
 
-      if ('boolean' === $type && $this->validateBoolean($field, $value)) continue;
+      if ('boolean' === $type && $this->validateBoolean($field, $value)) {
+        continue;
+      }
     }
 
     return $this;
@@ -88,7 +103,10 @@ class Validator
     // Literal values (e.g., "value1"|"value2")
     if (preg_match('/^("[^"]+"(\|"?[^"]+"?)*)$/', $rule)) {
       $result['type'] = 'string';
-      $result['literals'] = array_map(fn ($v) => trim($v, '"'), explode('|', $rule));
+      $result['literals'] = array_map(
+        fn($v) => trim($v, '"'),
+        explode('|', $rule),
+      );
 
       return $result;
     }
@@ -102,7 +120,13 @@ class Validator
     }
 
     // Type and operators (string, string.email, string.date, int, float, boolean with operators like >=, <=, >, <, =)
-    if (preg_match('/^(string)(?:\.(email|date))?(?:([<>]=?|=)(\d+))?(?:([<>]=?|=)(\d+))?$|^(int|float)(?:([<>]=?|=)(\d+))?(?:([<>]=?|=)(\d+))?$|^(boolean)$/', $rule, $matches)) {
+    if (
+      preg_match(
+        '/^(string)(?:\.(email|date))?(?:([<>]=?|=)(\d+))?(?:([<>]=?|=)(\d+))?$|^(int|float)(?:([<>]=?|=)(\d+))?(?:([<>]=?|=)(\d+))?$|^(boolean)$/',
+        $rule,
+        $matches,
+      )
+    ) {
       if (!empty($matches[1])) {
         $result['type'] = $matches[1];
         if (isset($matches[2])) {
@@ -137,10 +161,14 @@ class Validator
     return $result;
   }
 
-  private function validateLiteral(string $field, string $value, array $literals): bool
-  {
+  private function validateLiteral(
+    string $field,
+    string $value,
+    array $literals,
+  ): bool {
     if (!in_array($value, $literals, true)) {
-      $this->errors[$field] = 'Value must be one of: '.implode(', ', $literals).'.';
+      $this->errors[$field] =
+        'Value must be one of: ' . implode(', ', $literals) . '.';
 
       return false;
     }
@@ -163,8 +191,11 @@ class Validator
     return true;
   }
 
-  private function validatePattern(string $field, string $value, string $pattern): bool
-  {
+  private function validatePattern(
+    string $field,
+    string $value,
+    string $pattern,
+  ): bool {
     if (!preg_match($pattern, $value)) {
       $this->errors[$field] = 'Value does not match the required pattern.';
 
@@ -176,36 +207,60 @@ class Validator
     return true;
   }
 
-  private function validateLengthOrValue(string $type, string $field, $value, array $ops): bool
-  {
+  private function validateLengthOrValue(
+    string $type,
+    string $field,
+    $value,
+    array $ops,
+  ): bool {
     $comparisons = [
-      '>=' => [fn () => isset($ops['>='])
-        && 'string' === $type ? strlen($value) < @$ops['>='] : $value < @$ops['>='],
-        'string' === $type ? 'String length must be at least '.@$ops['>='].' characters.' : 'Value must be at least '.@$ops['>='].'.',
+      '>=' => [
+        fn() => isset($ops['>=']) && 'string' === $type
+          ? strlen($value) < @$ops['>=']
+          : $value < @$ops['>='],
+        'string' === $type
+          ? 'String length must be at least ' . @$ops['>='] . ' characters.'
+          : 'Value must be at least ' . @$ops['>='] . '.',
       ],
-      '>' => [fn () => isset($ops['>'])
-        && 'string' === $type ? strlen($value) <= @$ops['>'] : $value <= @$ops['>'],
-        'string' === $type ? 'String length must be greater than '.@$ops['>'].' characters.' : 'Value must be greater than '.@$ops['>'].'.',
+      '>' => [
+        fn() => isset($ops['>']) && 'string' === $type
+          ? strlen($value) <= @$ops['>']
+          : $value <= @$ops['>'],
+        'string' === $type
+          ? 'String length must be greater than ' . @$ops['>'] . ' characters.'
+          : 'Value must be greater than ' . @$ops['>'] . '.',
       ],
-      '<=' => [fn () => isset($ops['<='])
-        && 'string' === $type ? strlen($value) > @$ops['<='] : $value > @$ops['<='],
-        'string' === $type ? 'String length must be at most '.@$ops['<='].' characters.' : 'Value must be at most '.@$ops['<='].'.',
+      '<=' => [
+        fn() => isset($ops['<=']) && 'string' === $type
+          ? strlen($value) > @$ops['<=']
+          : $value > @$ops['<='],
+        'string' === $type
+          ? 'String length must be at most ' . @$ops['<='] . ' characters.'
+          : 'Value must be at most ' . @$ops['<='] . '.',
       ],
-      '<' => [fn () => isset($ops['<'])
-        && 'string' === $type ? strlen($value) >= @$ops['<'] : $value >= @$ops['<'],
-        'string' === $type ? 'String length must be less than '.@$ops['<'].' characters.' : 'Value must be less than '.@$ops['<'].'.',
+      '<' => [
+        fn() => isset($ops['<']) && 'string' === $type
+          ? strlen($value) >= @$ops['<']
+          : $value >= @$ops['<'],
+        'string' === $type
+          ? 'String length must be less than ' . @$ops['<'] . ' characters.'
+          : 'Value must be less than ' . @$ops['<'] . '.',
       ],
-      '=' => [fn () => isset($ops['=']) && $value !== @$ops['='],
-        'string' === $type ? 'String length must be exactly '.@$ops['='].' characters.' : 'Value must be exactly '.@$ops['='].'.',
+      '=' => [
+        fn() => isset($ops['=']) && $value !== @$ops['='],
+        'string' === $type
+          ? 'String length must be exactly ' . @$ops['='] . ' characters.'
+          : 'Value must be exactly ' . @$ops['='] . '.',
       ],
     ];
 
-    foreach ($comparisons as $op => [$failCheck, $msg])
+    foreach ($comparisons as $op => [$failCheck, $msg]) {
       if (isset($ops[$op]) && $failCheck()) {
         $this->errors[$field] = $msg;
 
         return false;
       }
+    }
 
     $this->data[$field] = $value;
 

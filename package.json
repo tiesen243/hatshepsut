@@ -8,12 +8,12 @@
     "dev": "bun with-env concurrently -c=\"#646CFF,#777BB4\" \"bun run dev:vite\" \"bun run dev:php\" --names=vite,php",
     "dev:php": "php -S localhost:8000 -t public",
     "dev:vite": "vite",
-    "format": "concurrently -c=\"#F7B93E,#777BB4\" \"bun run format:js\" \"bun run format:php\" --names=prettier,php-cs-fixer",
-    "format:js": "prettier --write . --cache --cache-location .cache/prettier",
-    "format:php": "bun with-env ./vendor/bin/php-cs-fixer fix --using-cache yes --cache-file .cache/php-cs-fixer",
+    "format": "prettier --check . --cache --cache-location .cache/prettier",
+    "format:fix": "prettier --check . --write --cache --cache-location .cache/prettier",
     "with-env": "dotenv -e .env --"
   },
   "devDependencies": {
+    "@prettier/plugin-php": "^0.24.0",
     "@tailwindcss/vite": "^4.1.13",
     "@types/node": "^24.5.2",
     "concurrently": "^9.2.1",

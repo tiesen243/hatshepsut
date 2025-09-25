@@ -13,34 +13,38 @@ class PostController
   {
     $posts = Post::findMany();
 
-    return Response::view('posts.index', ['posts' => $posts]);
+    return Response::view('routes.posts.index', ['posts' => $posts]);
   }
 
   public function show(Request $req, string $id): Response
   {
     $post = Post::findOne($id);
-    if (!$post)
+    if (!$post) {
       return Response::view('errors.404', [], 404);
+    }
 
-    return Response::view('posts.show', ['post' => $post]);
+    return Response::view('routes.posts.show', ['post' => $post]);
   }
 
-  public function create(Request $req): Response
+  public function create(): Response
+  {
+    return Response::view('routes.posts.create');
+  }
+
+  public function store(Request $req): Response
   {
     $parsed = new Validator([
       'title' => 'string>=5<=100',
       'content' => 'string>=10',
-    ])->parse($req->json());
-    if (!$parsed->isValid())
+    ])->parse($req->input());
+    if (!$parsed->isValid()) {
       return Response::json(['errors' => $parsed->errors()], 422);
+    }
 
-    return Response::json($parsed->data());
-  }
+    $data = $parsed->data();
+    $post = new Post('', $data['title'], $data['content']);
+    $post->save();
 
-  public function getPosts()
-  {
-    $posts = Post::findMany();
-
-    return Response::json(array_map(fn ($post) => $post->toArray(), $posts));
+    return Response::redirect('/posts');
   }
 }

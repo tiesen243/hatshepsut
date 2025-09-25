@@ -12,13 +12,13 @@ class Request
     private array $server,
     private array $cookies,
     private array $files,
-  ) {
-  }
+  ) {}
 
   public static function create(): Request
   {
-    if (null === self::$instance)
+    if (null === self::$instance) {
       self::$instance = new static($_GET, $_POST, $_SERVER, $_COOKIE, $_FILES);
+    }
 
     return self::$instance;
   }

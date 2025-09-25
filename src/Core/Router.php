@@ -47,8 +47,10 @@ class Router
    *
    * @return self returns a new Router instance
    */
-  public static function registerMiddleware(string $name, callable $middleware): self
-  {
+  public static function registerMiddleware(
+    string $name,
+    callable $middleware,
+  ): self {
     self::$middlewares[$name] = $middleware;
 
     return new self();
@@ -65,11 +67,15 @@ class Router
    */
   public function middleware(string $name): self
   {
-    if (!isset(self::$middlewares[$name]))
+    if (!isset(self::$middlewares[$name])) {
       throw new \Exception("Middleware '{$name}' not found.");
+    }
 
-    if ($this->lastMethod && $this->lastPath)
-      self::$routes[$this->lastMethod][$this->lastPath]['middlewares'][] = $name;
+    if ($this->lastMethod && $this->lastPath) {
+      self::$routes[$this->lastMethod][$this->lastPath][
+        'middlewares'
+      ][] = $name;
+    }
 
     return $this;
   }
@@ -94,22 +100,36 @@ class Router
     }
 
     try {
-      foreach ($matchedRoute['middlewares'] as $middlewareName)
+      foreach ($matchedRoute['middlewares'] as $middlewareName) {
         self::$middlewares[$middlewareName]($request);
+      }
 
       $callback = $matchedRoute['callback'];
       $response = null;
 
       if (is_array($callback) && 2 === count($callback)) {
         [$class, $method] = $callback;
-        $response = (new $class())->{$method}($request, ...$matchedParams);
-      } elseif (is_callable($callback)) $response = $callback($request, ...$matchedParams);
-      else throw new \Exception('Invalid route callback.');
+        $response = new $class()->{$method}($request, ...$matchedParams);
+      } elseif (is_callable($callback)) {
+        $response = $callback($request, ...$matchedParams);
+      } else {
+        throw new \Exception('Invalid route callback.');
+      }
 
-      if ($response instanceof Response) $response->send();
-      else (new Response($response))->send();
+      if ($response instanceof Response) {
+        $response->send();
+      } else {
+        new Response($response)->send();
+      }
     } catch (\Throwable $e) {
-      Response::json(['status' => 500, 'message' => 'Internal Server Error', 'error' => $e->getMessage()], 500)->send();
+      Response::json(
+        [
+          'status' => 500,
+          'message' => 'Internal Server Error',
+          'error' => $e->getMessage(),
+        ],
+        500,
+      )->send();
     }
   }
 
@@ -122,8 +142,11 @@ class Router
    *
    * @return self returns a new Router instance
    */
-  private static function registerRoute(string $path, string $method, mixed $callback): self
-  {
+  private static function registerRoute(
+    string $path,
+    string $method,
+    mixed $callback,
+  ): self {
     [$regex, $paramNames] = self::compileRoutePattern($path);
     self::$routes[$method][$path] = [
       'regex' => $regex,
@@ -155,10 +178,10 @@ class Router
 
         return '([^/]+)';
       },
-      $path
+      $path,
     );
     $regex = str_replace('/*', '/.*', $regex);
-    $regex = '#^'.$regex.'$#';
+    $regex = '#^' . $regex . '$#';
 
     return [$regex, $paramNames];
   }
@@ -171,7 +194,9 @@ class Router
   private static function matchRoute(array $routes, string $path): array
   {
     foreach ($routes as $routePattern => $routeInfo) {
-      if (!isset($routeInfo['regex'])) continue;
+      if (!isset($routeInfo['regex'])) {
+        continue;
+      }
       if (preg_match($routeInfo['regex'], $path, $matches)) {
         array_shift($matches);
 

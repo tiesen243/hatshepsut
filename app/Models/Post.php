@@ -12,8 +12,7 @@ class Post
     private string $content = '',
     private \DateTime $createdAt = new \DateTime(),
     private \DateTime $updatedAt = new \DateTime(),
-  ) {
-  }
+  ) {}
 
   public static function findMany()
   {
@@ -23,13 +22,16 @@ class Post
     $stmt->execute();
     $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-    return array_map(fn ($result) => new Post(
-      $result['id'],
-      $result['title'],
-      $result['content'],
-      new \DateTime($result['created_at']),
-      new \DateTime($result['updated_at'])
-    ), $results);
+    return array_map(
+      fn($result) => new Post(
+        $result['id'],
+        $result['title'],
+        $result['content'],
+        new \DateTime($result['created_at']),
+        new \DateTime($result['updated_at']),
+      ),
+      $results,
+    );
   }
 
   public static function findOne(string $id): ?Post
@@ -40,14 +42,48 @@ class Post
     $stmt->execute(['id' => $id]);
     $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-    return $row ?
-       new Post(
-         $row['id'],
-         $row['title'],
-         $row['content'],
-         new \DateTime($row['created_at']),
-         new \DateTime($row['updated_at'])
-       ) : null;
+    return $row
+      ? new Post(
+        $row['id'],
+        $row['title'],
+        $row['content'],
+        new \DateTime($row['created_at']),
+        new \DateTime($row['updated_at']),
+      )
+      : null;
+  }
+
+  public function save()
+  {
+    $pdo = Database::getConnection();
+
+    if ($this->id) {
+      $stmt = $pdo->prepare(
+        'UPDATE posts SET title = :title, content = :content, updated_at = NOW() WHERE id = :id',
+      );
+      $stmt->execute([
+        'id' => $this->id,
+        'title' => $this->title,
+        'content' => $this->content,
+      ]);
+    } else {
+      $stmt = $pdo->prepare(
+        'INSERT INTO posts (id, title, content, created_at, updated_at) VALUES (UUID(), :title, :content, NOW(), NOW())',
+      );
+      $stmt->execute([
+        'title' => $this->title,
+        'content' => $this->content,
+      ]);
+    }
+
+    if (!$this->id) {
+      $stmt = $pdo->query(
+        'SELECT id FROM posts ORDER BY created_at DESC LIMIT 1',
+      );
+      $this->id = $stmt->fetchColumn();
+    }
+
+    return $this;
   }
 
   // Getters and Setters

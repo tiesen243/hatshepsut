@@ -10,11 +10,13 @@ class Response
     private ?string $content = null,
     private int $statusCode = 200,
     private array $headers = [],
-  ) {
-  }
+  ) {}
 
-  public static function json($data, int $statusCode = 200, array $headers = []): self
-  {
+  public static function json(
+    $data,
+    int $statusCode = 200,
+    array $headers = [],
+  ): self {
     $headers['Content-Type'] = 'application/json';
 
     return new self(json_encode($data), $statusCode, $headers);
@@ -27,8 +29,12 @@ class Response
     return new self(null, $statusCode, $headers);
   }
 
-  public static function view(string $view, array $data = [], int $statusCode = 200, array $headers = []): self
-  {
+  public static function view(
+    string $view,
+    array $data = [],
+    int $statusCode = 200,
+    array $headers = [],
+  ): self {
     $headers['Content-Type'] = 'text/html';
     $content = Template::getInstance()->render($view, $data);
 
@@ -42,7 +48,8 @@ class Response
       header("{$name}: {$value}");
     }
 
-    if (null !== $this->content)
+    if (null !== $this->content) {
       echo $this->content;
+    }
   }
 }
