@@ -173,16 +173,18 @@ class Template
       '/@vite(?!ReactRefresh)(?:\(\s*\[([^]]*)\]\s*\))?/',
       function ($matches) {
         $viteUrl = rtrim($this->appConfig['vite_url'], '/');
+        $assets = [];
         $tags = [];
 
         if (empty($matches[1]) && 'development' === $this->appConfig['env']) {
           return "<script type=\"module\" src=\"{$viteUrl}/@vite/client\"></script>";
         }
 
-        $assets = array_map(
-          'trim',
-          explode(',', str_replace(['"', "'"], '', $matches[1])),
-        );
+        if (!empty($matches[1]))
+          $assets = array_map(
+            'trim',
+            explode(',', str_replace(['"', "'"], '', $matches[1])),
+          );
         if (empty($assets)) {
           return '';
         }
