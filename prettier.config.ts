@@ -9,7 +9,7 @@ const config = {
   singleQuote: true,
   trailingComma: 'all',
 
-  plugins: ['prettier-plugin-tailwindcss'],
+  plugins: ['@prettier/plugin-php', 'prettier-plugin-tailwindcss'],
 
   tailwindFunctions: ['cn', 'cva'],
 } satisfies Config & PluginOptions
