@@ -19,10 +19,7 @@ class PostController
   public function show(Request $req, string $id): Response
   {
     $post = Post::findOne($id);
-    if (!$post) {
-      return Response::view('errors.404', [], 404);
-    }
-
+    if (!$post) return Response::view('errors.404', [], 404);
     return Response::view('routes.posts.show', ['post' => $post]);
   }
 
@@ -45,6 +42,13 @@ class PostController
     $post = new Post('', $data['title'], $data['content']);
     $post->save();
 
+    return Response::redirect('/posts');
+  }
+
+  public function delete(Request $req, string $id): Response
+  {
+    $post = Post::findOne($id);
+    if ($post) $post->delete();
     return Response::redirect('/posts');
   }
 }

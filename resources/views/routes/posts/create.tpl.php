@@ -7,7 +7,7 @@
 @section('content')
   <main class="container flex flex-col gap-4 py-4">
     <h1 class="mb-4 text-3xl font-bold">Create Post</h1>
-    <form class="grid min-w-2xl gap-4" method="POST" action="/api/posts">
+    <form class="grid min-w-2xl gap-4" method="POST" action="/api/posts/store">
       <div class="grid gap-2">
         <label
           for="title"

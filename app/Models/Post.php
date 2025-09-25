@@ -87,6 +87,14 @@ class Post
     return $this;
   }
 
+  public function delete()
+  {
+    if (!$this->id) throw new \Exception('Cannot delete a post without an ID.');
+    $pdo = Database::getConnection();
+    $stmt = $pdo->prepare('DELETE FROM posts WHERE id = :id');
+    $stmt->execute(['id' => $this->id]);
+  }
+
   // Getters and Setters
   public function getId(): string
   {
