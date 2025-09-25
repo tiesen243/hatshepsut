@@ -23,17 +23,17 @@ A modern PHP web application framework that blends a robust backend with a strea
 
 1. Clone the repository:
 
-```bash
-git clone https://github.com/tiesen243/hatshepsut.git
-cd hatshepsut
-```
+   ```bash
+   git clone https://github.com/tiesen243/hatshepsut.git
+   cd hatshepsut
+   ```
 
 2. Install dependencies:
 
-```bash
-composer install
-bun install
-```
+   ```bash
+   composer install
+   bun install
+   ```
 
 3. Set up environment variables:
 
