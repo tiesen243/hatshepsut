@@ -27,11 +27,26 @@ class Application
       $this->basePath.'/.cache/views',
       $appConfig,
     );
+  }
 
-    // Load routes
-    require_once $this->basePath.'/routes/api.php';
+  public function withMiddleware(array $middlewares): self
+  {
+    foreach ($middlewares as $middleware) {
+      if (is_string($middleware) && class_exists($middleware))
+        $middleware = new $middleware();
+      Router::registerMiddleware($middleware);
+    }
 
-    require_once $this->basePath.'/routes/web.php';
+    return $this;
+  }
+
+  public function withRoutes(array $routes): self
+  {
+    foreach ($routes as $route) {
+      require_once $this->basePath.'/routes/'.$route.'.php';
+    }
+
+    return $this;
   }
 
   public function run()

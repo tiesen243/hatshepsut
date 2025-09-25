@@ -10,3 +10,7 @@ Router::get('/api/health', function () {
 
 Router::post('/api/posts/store', [PostController::class, 'store']);
 Router::post('/api/posts/:id/delete', [PostController::class, 'delete']);
+
+Router::get('/api/protected', function () {
+  return Response::json(['message' => 'You have accessed a protected API route.']);
+})->middleware('auth');

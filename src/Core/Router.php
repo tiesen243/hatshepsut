@@ -42,16 +42,14 @@ class Router
   /**
    * Register a middleware to be executed before route handling.
    *
-   * @param string   $name       the name of the middleware
    * @param callable $middleware the middleware function to execute
    *
    * @return self returns a new Router instance
    */
   public static function registerMiddleware(
-    string $name,
-    callable $middleware,
+    Middleware $middleware,
   ): self {
-    self::$middlewares[$name] = $middleware;
+    self::$middlewares[$middleware->getName()] = $middleware->canActivate(...);
 
     return new self();
   }
@@ -59,22 +57,26 @@ class Router
   /**
    * Attach a middleware to the last registered route.
    *
-   * @param string $name the name of the middleware to attach
+   * @param string|array $name the name or names of the middleware to attach
    *
    * @return self returns the current Router instance
    *
    * @throws \Exception if the middleware is not found or no route is registered
    */
-  public function middleware(string $name): self
+  public function middleware(string|array $name): self
   {
-    if (!isset(self::$middlewares[$name])) {
-      throw new \Exception("Middleware '{$name}' not found.");
-    }
+    $names = is_array($name) ? $name : [$name];
 
-    if ($this->lastMethod && $this->lastPath) {
-      self::$routes[$this->lastMethod][$this->lastPath][
-        'middlewares'
-      ][] = $name;
+    foreach ($names as $middlewareName) {
+      if (!isset(self::$middlewares[$middlewareName])) {
+        throw new \Exception("Middleware '{$middlewareName}' not found.");
+      }
+
+      if ($this->lastMethod && $this->lastPath) {
+        self::$routes[$this->lastMethod][$this->lastPath][
+          'middlewares'
+        ][] = $name;
+      }
     }
 
     return $this;
@@ -89,7 +91,7 @@ class Router
   {
     $method = $request->server('REQUEST_METHOD');
     $path = rtrim($request->server('REQUEST_URI'), '/') ?: '/';
-    $routes = self::$routes[$method] ?? [];
+    $routes = self::sortRoutes(self::$routes[$method] ?? []);
 
     [$matchedRoute, $matchedParams] = self::matchRoute($routes, $path);
 
@@ -101,7 +103,11 @@ class Router
 
     try {
       foreach ($matchedRoute['middlewares'] as $middlewareName) {
-        self::$middlewares[$middlewareName]($request);
+        if (!self::$middlewares[$middlewareName]($request)) {
+          Response::json(['status' => 403, 'message' => 'Forbidden'], 403)->send();
+
+          return;
+        }
       }
 
       $callback = $matchedRoute['callback'];
@@ -205,5 +211,31 @@ class Router
     }
 
     return [null, []];
+  }
+
+  /**
+   * Sort routes: static first, then dynamic, then catch-all.
+   *
+   * @param array $routes the routes to sort
+   *
+   * @return array the sorted routes
+   */
+  private static function sortRoutes(array $routes): array
+  {
+    $static = [];
+    $dynamic = [];
+    $catchAll = [];
+
+    foreach ($routes as $path => $info) {
+      if (str_contains($path, '/*')) {
+        $catchAll[$path] = $info;
+      } elseif (str_contains($path, ':')) {
+        $dynamic[$path] = $info;
+      } else {
+        $static[$path] = $info;
+      }
+    }
+
+    return array_merge($static, $dynamic, $catchAll);
   }
 }
