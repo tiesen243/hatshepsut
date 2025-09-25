@@ -13,10 +13,8 @@ build/
 dist/
 
 # misc
-.cache/
 .DS_Store
-.phpunit.result.cache
-.php-cs-fixer.cache
+*.cache
 
 # local env files
 .env*

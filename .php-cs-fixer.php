@@ -8,16 +8,12 @@ $finder = Finder::create()
   ->in(__DIR__.'/config')
   ->in(__DIR__.'/routes')
   ->in(__DIR__.'/src')
- ->ignoreDotFiles(true);
+  ->ignoreDotFiles(true);
 
 return new Config()
   ->setRules([
     '@Symfony' => true,
-    '@PSR12' => true,
     'control_structure_braces' => false,
   ])
   ->setIndent('  ')
-  ->setParallelConfig(
-    PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect(),
-  )
   ->setFinder($finder);
