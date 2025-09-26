@@ -10,6 +10,7 @@ RUN bun install
 # Copy resource files
 COPY ./resources ./resources
 COPY vite.config.ts ./
+COPY tsconfig.json ./
 RUN bun run build
 
 FROM base AS runner
