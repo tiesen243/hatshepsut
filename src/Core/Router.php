@@ -40,6 +40,58 @@ class Router
   }
 
   /**
+   * Register a route with method, compiling regex and extracting param names.
+   *
+   * @param string $path     the URL path to match
+   * @param string $method   The HTTP method (e.g., 'GET', 'POST').
+   * @param mixed  $callback the handler function or method for the route
+   *
+   * @return self returns a new Router instance
+   */
+  private static function registerRoute(
+    string $path,
+    string $method,
+    mixed $callback,
+  ): self {
+    [$regex, $paramNames] = self::compileRoutePattern($path);
+    self::$routes[$method][$path] = [
+      'regex' => $regex,
+      'paramNames' => $paramNames,
+      'callback' => $callback,
+      'middlewares' => [],
+    ];
+
+    $instance = new self();
+    $instance->lastMethod = $method;
+    $instance->lastPath = $path;
+
+    return $instance;
+  }
+
+  /**
+   * Compile a route pattern to regex and extract parameter names.
+   *
+   * @return array [string $regex, array $paramNames]
+   */
+  private static function compileRoutePattern(string $path): array
+  {
+    $paramNames = [];
+    $regex = preg_replace_callback(
+      '#:([\w]+)#',
+      function ($matches) use (&$paramNames) {
+        $paramNames[] = $matches[1];
+
+        return '([^/]+)';
+      },
+      $path,
+    );
+    $regex = str_replace('/*', '/.*', $regex);
+    $regex = '#^'.$regex.'$#';
+
+    return [$regex, $paramNames];
+  }
+
+  /**
    * Register a middleware to be executed before route handling.
    *
    * @param callable $middleware the middleware function to execute
@@ -133,59 +185,6 @@ class Router
         500,
       )->send();
     }
-  }
-
-  /**
-   * Register a route with method, compiling regex and extracting param names.
-   *
-   * @param string $path     the URL path to match
-   * @param string $method   The HTTP method (e.g., 'GET', 'POST').
-   * @param mixed  $callback the handler function or method for the route
-   *
-   * @return self returns a new Router instance
-   */
-  private static function registerRoute(
-    string $path,
-    string $method,
-    mixed $callback,
-  ): self {
-    [$regex, $paramNames] = self::compileRoutePattern($path);
-    self::$routes[$method][$path] = [
-      'regex' => $regex,
-      'paramNames' => $paramNames,
-
-      'callback' => $callback,
-      'middlewares' => [],
-    ];
-
-    $instance = new self();
-    $instance->lastMethod = $method;
-    $instance->lastPath = $path;
-
-    return $instance;
-  }
-
-  /**
-   * Compile a route pattern to regex and extract parameter names.
-   *
-   * @return array [string $regex, array $paramNames]
-   */
-  private static function compileRoutePattern(string $path): array
-  {
-    $paramNames = [];
-    $regex = preg_replace_callback(
-      '#:([\w]+)#',
-      function ($matches) use (&$paramNames) {
-        $paramNames[] = $matches[1];
-
-        return '([^/]+)';
-      },
-      $path,
-    );
-    $regex = str_replace('/*', '/.*', $regex);
-    $regex = '#^'.$regex.'$#';
-
-    return [$regex, $paramNames];
   }
 
   /**
