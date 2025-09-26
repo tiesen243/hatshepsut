@@ -44,5 +44,4 @@ RUN mkdir -p .cache/views
 
 # Expose port 8000
 EXPOSE 8000
-ENV APP_ENV=production
 CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
