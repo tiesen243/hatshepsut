@@ -9,48 +9,59 @@ use Framework\Http\Response;
 
 class PostController
 {
-  public function index(): Response
+  public function getPosts(): Response
   {
     $posts = Post::findMany();
 
-    return Response::view('routes.posts.index', ['posts' => $posts]);
+    return Response::json([
+      'message' => 'Posts retrieved successfully',
+      'posts' => array_map(fn ($post) => $post->toArray(), $posts),
+    ]);
   }
 
-  public function show(Request $req, string $id): Response
+  public function getPost(Request $req, string $id): Response
   {
     $post = Post::findOne($id);
-    if (!$post) return Response::view('errors.404', [], 404);
+    if (!$post) return Response::json(['message' => 'Post not found'], 404);
 
-    return Response::view('routes.posts.show', ['post' => $post]);
+    return Response::json([
+      'message' => 'Post retrieved successfully',
+      'post' => $post->toArray(),
+    ]);
   }
 
-  public function create(): Response
-  {
-    return Response::view('routes.posts.create');
-  }
-
-  public function store(Request $req): Response
+  public function store(Request $req, ?string $id = null): Response
   {
     $parsed = new Validator([
       'title' => 'string>=5<=100',
       'content' => 'string>=10',
     ])->parse($req->input());
-    if (!$parsed->isValid()) {
-      return Response::json(['errors' => $parsed->errors()], 422);
-    }
+    if (!$parsed->isValid())
+      return Response::json([
+        'message' => 'Validation failed',
+        'errors' => $parsed->errors(),
+      ], 422);
 
     $data = $parsed->data();
+
     $post = new Post('', $data['title'], $data['content']);
+    if ($id) $post->setId($id);
+
     $post->save();
 
-    return Response::redirect('/posts');
+    return Response::json([
+      'message' => 'Post created successfully',
+      'post' => $post,
+    ], 201);
   }
 
   public function delete(Request $req, string $id): Response
   {
     $post = Post::findOne($id);
-    if ($post) $post->delete();
+    if (!$post) return Response::json(['message' => 'Post not found'], 404);
 
-    return Response::redirect('/posts');
+    $post->delete();
+
+    return Response::json(['message' => 'Post deleted successfully']);
   }
 }

@@ -169,7 +169,7 @@ class Template
     );
 
     // Vite asset handling
-    return preg_replace_callback(
+    $content = preg_replace_callback(
       '/@vite(?!ReactRefresh)(?:\(\s*\[([^]]*)\]\s*\))?/',
       function ($matches) {
         $viteUrl = rtrim($this->appConfig['vite_url'], '/');
@@ -222,5 +222,25 @@ class Template
       },
       $content,
     );
+
+    // Handle @viteReactRefresh
+    $content = preg_replace_callback(
+      '/@viteReactRefresh/',
+      function () {
+        $viteUrl = rtrim($this->appConfig['vite_url'], '/');
+        if ('development' !== $this->appConfig['env']) return '';
+
+        return "<script type=\"module\">
+          import RefreshRuntime from '{$viteUrl}/@react-refresh'
+          RefreshRuntime.injectIntoGlobalHook(window)
+          window.\$RefreshReg$ = () => {};
+          window.\$RefreshSig$ = () => (type) => type
+          window.__vite_plugin_react_preamble_installed__ = true
+        </script>";
+      },
+      $content,
+    );
+
+    return $content;
   }
 }
