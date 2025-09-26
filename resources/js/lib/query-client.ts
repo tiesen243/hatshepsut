@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { defaultShouldDehydrateQuery, QueryClient } from '@tanstack/react-query'
 
 export const createQueryClient = () =>
@@ -16,3 +17,5 @@ export const createQueryClient = () =>
       hydrate: {},
     },
   })
+
+export const getQueryClient = cache(createQueryClient)

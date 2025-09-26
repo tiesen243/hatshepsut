@@ -104,7 +104,7 @@ class Router
     try {
       foreach ($matchedRoute['middlewares'] as $middlewareName) {
         if (!self::$middlewares[$middlewareName]($request)) {
-          Response::json(['status' => 403, 'message' => 'Forbidden'], 403)->send();
+          Response::json(['message' => 'Forbidden'], 403)->send();
 
           return;
         }
@@ -129,11 +129,7 @@ class Router
       }
     } catch (\Throwable $e) {
       Response::json(
-        [
-          'status' => 500,
-          'message' => 'Internal Server Error',
-          'error' => $e->getMessage(),
-        ],
+        ['message' => 'Internal Server Error', 'error' => $e->getMessage()],
         500,
       )->send();
     }

@@ -4,6 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 
 import { ThemeProvider } from '@/hooks/use-theme'
 import { createQueryClient } from '@/lib/query-client'
+import { Toaster } from '@/components/ui/sonner'
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined
 const getQueryClient = () => {
@@ -18,6 +19,8 @@ export default function RootLayout() {
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <Outlet />
+
+        <Toaster />
       </QueryClientProvider>
     </ThemeProvider>
   )

@@ -20,6 +20,8 @@ class Response
   ): self {
     $headers['Content-Type'] = 'application/json';
 
+    $data = array_merge(['status' => $statusCode], (array) $data);
+
     return new self(json_encode($data), $statusCode, $headers);
   }
 

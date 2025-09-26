@@ -15,7 +15,7 @@ class PostController
 
     return Response::json([
       'message' => 'Posts retrieved successfully',
-      'posts' => array_map(fn ($post) => $post->toArray(), $posts),
+      'data' => array_map(fn ($post) => $post->toArray(), $posts),
     ]);
   }
 
@@ -26,7 +26,7 @@ class PostController
 
     return Response::json([
       'message' => 'Post retrieved successfully',
-      'post' => $post->toArray(),
+      'data' => $post->toArray(),
     ]);
   }
 
@@ -35,12 +35,12 @@ class PostController
     $parsed = new Validator([
       'title' => 'string>=5<=100',
       'content' => 'string>=10',
-    ])->parse($req->input());
+    ])->parse($req->json());
     if (!$parsed->isValid())
       return Response::json([
         'message' => 'Validation failed',
-        'errors' => $parsed->errors(),
-      ], 422);
+        'error' => $parsed->errors(),
+      ], 400);
 
     $data = $parsed->data();
 
@@ -51,7 +51,7 @@ class PostController
 
     return Response::json([
       'message' => 'Post created successfully',
-      'post' => $post,
+      'data' => $post,
     ], 201);
   }
 
