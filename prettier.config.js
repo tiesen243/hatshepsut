@@ -1,7 +1,10 @@
-import type { Config } from 'prettier'
-import type { PluginOptions } from 'prettier-plugin-tailwindcss'
+/** @typedef {import("prettier").Config} PrettierConfig */
+/** @typedef {import("prettier-plugin-tailwindcss").PluginOptions} TailwindConfig */
+/** @typedef {import("@ianvs/prettier-plugin-sort-imports").PluginConfig} SortImportsConfig */
+
 import { fileURLToPath } from 'node:url'
 
+/** @type {PrettierConfig & TailwindConfig & SortImportsConfig} */
 const config = {
   /* General Prettier Config */
   semi: false,
@@ -37,6 +40,6 @@ const config = {
   importOrderTypeScriptVersion: '4.4.0',
 
   overrides: [{ files: ['*.tpl.php'], options: { parser: 'blade' } }],
-} satisfies Config & PluginOptions
+} 
 
 export default config
