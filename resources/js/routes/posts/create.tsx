@@ -41,7 +41,7 @@ export function Component() {
           <Label htmlFor="title">Title</Label>
           <Input id="title" name="title" disabled={isPending} required />
           {!(error instanceof Error) && error?.title && (
-            <p className="text-destructive text-sm">{error.title}</p>
+            <p className="text-sm text-destructive">{error.title}</p>
           )}
         </div>
 
@@ -49,7 +49,7 @@ export function Component() {
           <Label htmlFor="content">Content</Label>
           <Textarea id="content" name="content" disabled={isPending} required />
           {!(error instanceof Error) && error?.content && (
-            <p className="text-destructive text-sm">{error.content}</p>
+            <p className="text-sm text-destructive">{error.content}</p>
           )}
         </div>
 
