@@ -7,7 +7,7 @@
     "target": "es2024",
     "moduleResolution": "bundler",
     "lib": ["es2024", "dom", "dom.iterable"],
-    "types": ["node"],
+    "types": ["node", "vite/client"],
 
     // Other Outputs
     "sourceMap": true,
