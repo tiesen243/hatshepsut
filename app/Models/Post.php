@@ -23,4 +23,6 @@ class Post extends Model
 
   #[Column('TIMESTAMP', nullable: false, default: 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP')]
   public string $updated_at;
+
+  public ?int $count = null;
 }
