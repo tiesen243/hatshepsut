@@ -4,21 +4,37 @@ export interface IPost {
   id: string
   title: string
   content: string
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
+}
+
+interface AllQuery {
+  page?: number
+  limit?: number
 }
 
 export const post = {
   all: {
-    queryKey: () => ['posts'],
-    queryOptions: () =>
+    queryKey: (query: AllQuery = {}) => ['posts', query],
+    queryOptions: (query: AllQuery) =>
       queryOptions({
-        queryKey: [...post.all.queryKey()],
+        queryKey: [...post.all.queryKey(query)],
         queryFn: async () => {
-          const res = await fetch('/api/posts')
+          const searchParams = new URLSearchParams()
+          if (query.page) searchParams.append('page', query.page.toString())
+          if (query.limit) searchParams.append('limit', query.limit.toString())
+
+          const res = await fetch(`/api/posts?${searchParams.toString()}`)
           if (!res.ok) throw new Error('Network response was not ok')
-          const json = (await res.json()) as ApiResponse<IPost[]>
-          return json.data.map((post) => new Post(post))
+          const json = (await res.json()) as ApiResponse<{
+            posts: IPost[]
+            total_pages: number
+          }>
+
+          return {
+            posts: json.data.posts.map((post) => new Post(post)),
+            totalPages: json.data.total_pages,
+          }
         },
       }),
   },
@@ -43,7 +59,7 @@ export const post = {
       mutationOptions<
         ApiResponse<unknown, { title?: string; content?: string }>,
         { title?: string; content?: string } | Error,
-        Omit<Post, 'id' | 'createdAt' | 'updatedAt'>
+        Omit<IPost, 'id' | 'createdAt' | 'updatedAt'>
       >({
         mutationKey: [...post.create.mutationKey()],
         mutationFn: async (newPost) => {
@@ -71,7 +87,7 @@ export const post = {
       mutationOptions({
         mutationKey: [...post.update.mutationKey(id)],
         mutationFn: async (
-          updatedPost: Partial<Omit<Post, 'id' | 'createdAt' | 'updatedAt'>>,
+          updatedPost: Partial<Omit<IPost, 'id' | 'createdAt' | 'updatedAt'>>,
         ) => {
           const res = await fetch(`/api/posts/${id}/update`, {
             method: 'POST',
@@ -110,52 +126,17 @@ export const post = {
 } as const
 
 export class Post {
-  private _id: string
-  private _title: string
-  private _content: string
-  private _createdAt: string
-  private _updatedAt: string
+  id: string
+  title: string
+  content: string
+  createdAt: Date
+  updatedAt: Date
 
   constructor(post: IPost) {
-    this._id = post.id
-    this._title = post.title
-    this._content = post.content
-    this._createdAt = post.createdAt
-    this._updatedAt = post.updatedAt
-  }
-
-  get id(): string {
-    return this._id
-  }
-  set id(value: string) {
-    this._id = value
-  }
-
-  get title(): string {
-    return this._title
-  }
-  set title(value: string) {
-    this._title = value
-  }
-
-  get content(): string {
-    return this._content
-  }
-  set content(value: string) {
-    this._content = value
-  }
-
-  get createdAt(): Date {
-    return new Date(this._createdAt)
-  }
-  set createdAt(value: string) {
-    this._createdAt = value
-  }
-
-  get updatedAt(): Date {
-    return new Date(this._updatedAt)
-  }
-  set updatedAt(value: string) {
-    this._updatedAt = value
+    this.id = post.id
+    this.title = post.title
+    this.content = post.content
+    this.createdAt = new Date(post.created_at)
+    this.updatedAt = new Date(post.updated_at)
   }
 }

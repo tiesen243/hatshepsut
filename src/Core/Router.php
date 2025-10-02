@@ -142,7 +142,8 @@ class Router
   public static function dispatch(Request $request): void
   {
     $method = $request->server('REQUEST_METHOD');
-    $path = rtrim($request->server('REQUEST_URI'), '/') ?: '/';
+    $path = parse_url($request->server('REQUEST_URI'), PHP_URL_PATH);
+    $path = rtrim($path, '/') ?: '/';
     $routes = self::sortRoutes(self::$routes[$method] ?? []);
 
     [$matchedRoute, $matchedParams] = self::matchRoute($routes, $path);
@@ -167,18 +168,12 @@ class Router
 
       if (is_array($callback) && 2 === count($callback)) {
         [$class, $method] = $callback;
-        $response = new $class()->{$method}($request, ...$matchedParams);
-      } elseif (is_callable($callback)) {
-        $response = $callback($request, ...$matchedParams);
-      } else {
-        throw new \Exception('Invalid route callback.');
-      }
+        $response = new $class($request)->{$method}(...$matchedParams);
+      } elseif (is_callable($callback)) $response = $callback($request, ...$matchedParams);
+      else throw new \Exception('Invalid route callback.');
 
-      if ($response instanceof Response) {
-        $response->send();
-      } else {
-        new Response($response)->send();
-      }
+      if ($response instanceof Response) $response->send();
+      else new Response($response)->send();
     } catch (\Throwable $e) {
       Response::json(
         ['message' => 'Internal Server Error', 'error' => $e->getMessage()],

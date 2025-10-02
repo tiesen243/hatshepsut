@@ -52,13 +52,13 @@ class Database
     }
   }
 
-  public static function connect(array $config): self
+  public static function connect(array $config): \PDO
   {
     if (null === self::$instance) {
       self::$instance = new self($config);
     }
 
-    return self::$instance;
+    return self::$instance->pdo;
   }
 
   public static function getConnection(): \PDO

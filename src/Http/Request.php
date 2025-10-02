@@ -39,9 +39,12 @@ class Request
     return $this->cookies[$key] ?? $default;
   }
 
-  public function query(): array
+  public function query(?string $key = null, mixed $default = null): array|string|null
   {
-    return $this->get;
+    if (null === $key)
+      return $this->get;
+
+    return $this->get[$key] ?? $default;
   }
 
   public function input(): array
