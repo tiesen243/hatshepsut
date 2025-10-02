@@ -9,18 +9,15 @@ RUN bun install
 
 # Copy resource files
 COPY ./resources ./resources
-COPY vite.config.ts ./
-COPY tsconfig.json ./
+COPY vite.config.ts tsconfig.json ./
 RUN bun run build
 
 FROM base AS runner
 WORKDIR /app
 
-# Install Mysql extension
-RUN docker-php-ext-install pdo pdo_mysql
-
-# Install Composer
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
+# Install PHP extensions and Composer
+RUN docker-php-ext-install pdo pdo_mysql \
+    && php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
     && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
     && php -r "unlink('composer-setup.php');"
 
@@ -28,7 +25,7 @@ RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader
 
-# Copy application files
+# Copy application source
 COPY app ./app
 COPY config ./config
 COPY public ./public
@@ -36,7 +33,7 @@ COPY resources/views ./resources/views
 COPY routes ./routes
 COPY src ./src
 
-# Copy built files from builder stage
+# Copy built frontend assets
 COPY --from=builder /build/public/build ./public/build
 
 # Create cache directory for views
