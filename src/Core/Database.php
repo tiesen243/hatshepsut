@@ -70,3 +70,17 @@ class Database
     return self::$instance->pdo;
   }
 }
+
+#[\Attribute(\Attribute::TARGET_PROPERTY)]
+class Column
+{
+  public function __construct(
+    public string $type,
+    public bool $primary = false,
+    public bool $unique = false,
+    public bool $nullable = true,
+    public ?string $default = null,
+    public ?string $onUpdate = null,
+  ) {
+  }
+}

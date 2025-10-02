@@ -2,16 +2,25 @@
 
 namespace App\Models;
 
+use Framework\Core\Column;
 use Framework\Core\Model;
 
 class Post extends Model
 {
   protected string $table = 'posts';
-  protected array $columns = [
-    'id' => 'VARCHAR(36) PRIMARY KEY',
-    'title' => 'VARCHAR(255) NOT NULL',
-    'content' => 'TEXT NOT NULL',
-    'created_at' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP',
-    'updated_at' => 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP',
-  ];
+
+  #[Column('VARCHAR(24)', primary: true, nullable: false)]
+  public string $id;
+
+  #[Column('VARCHAR(255)', nullable: false)]
+  public string $title;
+
+  #[Column('TEXT', nullable: false)]
+  public string $content;
+
+  #[Column('TIMESTAMP', nullable: false, default: 'CURRENT_TIMESTAMP')]
+  public string $created_at;
+
+  #[Column('TIMESTAMP', nullable: false, default: 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP')]
+  public string $updated_at;
 }

@@ -120,9 +120,8 @@ class Router
     $names = is_array($name) ? $name : [$name];
 
     foreach ($names as $middlewareName) {
-      if (!isset(self::$middlewares[$middlewareName])) {
+      if (!isset(self::$middlewares[$middlewareName]))
         throw new \Exception("Middleware '{$middlewareName}' not found.");
-      }
 
       if ($this->lastMethod && $this->lastPath) {
         self::$routes[$this->lastMethod][$this->lastPath][

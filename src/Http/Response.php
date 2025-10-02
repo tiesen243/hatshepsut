@@ -27,9 +27,7 @@ class Response
 
   public static function redirect(string $url, int $statusCode = 302): self
   {
-    $headers = ['Location' => $url];
-
-    return new self(null, $statusCode, $headers);
+    return new self(null, $statusCode, ['Location' => $url]);
   }
 
   public static function view(
@@ -47,12 +45,10 @@ class Response
   public function send(): void
   {
     http_response_code($this->statusCode);
-    foreach ($this->headers as $name => $value) {
+    foreach ($this->headers as $name => $value)
       header("{$name}: {$value}");
-    }
 
-    if (null !== $this->content) {
+    if (null !== $this->content)
       echo $this->content;
-    }
   }
 }

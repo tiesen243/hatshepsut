@@ -7,11 +7,11 @@ abstract class Model
   protected static \PDO $db;
 
   protected string $table;
-  protected array $columns = [];
 
   private string $query;
   private string $queryType;
   private array $bindings = [];
+  private bool $incrementing = false;
 
   public function __construct()
   {
@@ -27,15 +27,30 @@ abstract class Model
   public static function migrate(): void
   {
     $instance = new static();
-    if (empty($instance->columns)) return;
+    $reflection = new \ReflectionClass($instance);
 
-    $columnsSql = implode(",\n  ", array_map(
-      fn ($type, $col) => "$col $type",
-      $instance->columns,
-      array_keys($instance->columns)
-    ));
-    $sql = "CREATE TABLE IF NOT EXISTS {$instance->table} ($columnsSql)";
+    $columns = [];
 
+    foreach ($reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
+      foreach ($prop->getAttributes(Column::class) as $attribute) {
+        /** @var Column $meta */
+        $meta = $attribute->newInstance();
+        $columnDef = "{$prop->getName()} {$meta->type}";
+        if ($meta->primary) $columnDef .= ' PRIMARY KEY';
+        if (!$meta->nullable) $columnDef .= ' NOT NULL';
+        if ($meta->unique) $columnDef .= ' UNIQUE';
+        if (null !== $meta->default) $columnDef .= " DEFAULT {$meta->default}";
+        if (null !== $meta->onUpdate) $columnDef .= " ON UPDATE {$meta->onUpdate}";
+        $columns[] = $columnDef;
+
+        if ($meta->primary && 'INT' === $meta->type) $instance->incrementing = true;
+      }
+    }
+
+    if (empty($columns)) return;
+
+    $columnsSql = implode(",\n  ", $columns);
+    $sql = "CREATE TABLE IF NOT EXISTS {$instance->table} (\n  $columnsSql\n);";
     self::$db->exec($sql);
   }
 
@@ -60,11 +75,11 @@ abstract class Model
 
   public static function create(array $data): array
   {
-    $instance = new static();
+    if (empty($data)) return [];
 
-    $data['id'] = uniqid('c', true);
-    $data['created_at'] = date('Y-m-d H:i:s');
-    $data['updated_at'] = date('Y-m-d H:i:s');
+    $instance = new static();
+    if (!$instance->incrementing) $data['id'] = uniqid('c', true);
+    elseif (!isset($data['id'])) $data['id'] = null;
 
     $columns = implode(', ', array_keys($data));
     $placeholders = implode(', ', array_map(fn ($key) => ":$key", array_keys($data)));
@@ -155,7 +170,7 @@ abstract class Model
     return $this;
   }
 
-  public function execute(): ?array
+  public function execute(): mixed
   {
     $stmt = self::$db->prepare($this->query);
     $stmt->setFetchMode(\PDO::FETCH_CLASS, get_class($this));
