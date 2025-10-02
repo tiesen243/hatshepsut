@@ -30,6 +30,7 @@ abstract class Model
     $reflection = new \ReflectionClass($instance);
 
     $columns = [];
+    $foreignKeys = [];
 
     foreach ($reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
       foreach ($prop->getAttributes(Column::class) as $attribute) {
@@ -45,12 +46,24 @@ abstract class Model
 
         if ($meta->primary && 'INT' === $meta->type) $instance->incrementing = true;
       }
+
+      foreach ($prop->getAttributes(Relation::class) as $attribute) {
+        /** @var Relation $meta */
+        $meta = $attribute->newInstance();
+        $fkDef = "FOREIGN KEY ({$prop->getName()}) REFERENCES {$meta->references}";
+
+        if (null !== $meta->onDelete) $fkDef .= " ON DELETE {$meta->onDelete}";
+        if (null !== $meta->onUpdate) $fkDef .= " ON UPDATE {$meta->onUpdate}";
+
+        $foreignKeys[] = $fkDef;
+      }
     }
 
     if (empty($columns)) return;
 
-    $columnsSql = implode(",\n  ", $columns);
-    $sql = "CREATE TABLE IF NOT EXISTS {$instance->table} (\n  $columnsSql\n);";
+    $allDefs = array_merge($columns, $foreignKeys);
+    $columnsSql = implode(",\n  ", $allDefs);
+    $sql = "CREATE TABLE IF NOT EXISTS {$instance->table} (\n  $columnsSql\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
     self::$db->exec($sql);
   }
 

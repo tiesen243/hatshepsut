@@ -84,3 +84,14 @@ class Column
   ) {
   }
 }
+
+#[\Attribute(\Attribute::TARGET_PROPERTY)]
+class Relation
+{
+  public function __construct(
+    public string $references,
+    public ?string $onDelete = null,
+    public ?string $onUpdate = null,
+  ) {
+  }
+}
